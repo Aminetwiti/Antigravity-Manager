@@ -181,7 +181,7 @@ fn to_account_response(
     AccountResponse {
         id: account.id.clone(),
         email: account.email.clone(),
-        name: account.name.clone(),
+        name: account.name().cloned(),
         is_current: current_id.as_ref() == Some(&account.id),
         disabled: account.disabled,
         disabled_reason: account.disabled_reason.clone(),
@@ -204,7 +204,7 @@ fn to_account_response(
             subscription_tier: q.subscription_tier.clone(),
             is_forbidden: q.is_forbidden,
         }),
-        device_bound: account.device_profile.is_some(),
+        device_bound: account.device_profile().is_some(),
         last_used: account.last_used,
         validation_blocked: account.validation_blocked,
         validation_blocked_until: account.validation_blocked_until,

@@ -11,12 +11,14 @@ import {
   ToggleRight,
   Trash2,
   Upload,
+  Bot,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import AccountDetailsDialog from "../components/accounts/AccountDetailsDialog";
 import AccountGrid from "../components/accounts/AccountGrid";
 import AccountTable from "../components/accounts/AccountTable";
 import AddAccountDialog from "../components/accounts/AddAccountDialog";
+import AddOpenAIAccountDialog from "../components/accounts/AddOpenAIAccountDialog";
 import DeviceFingerprintDialog from "../components/accounts/DeviceFingerprintDialog";
 import ModalDialog from "../components/common/ModalDialog";
 import Pagination from "../components/common/Pagination";
@@ -78,6 +80,7 @@ function Accounts() {
   const [isWarmupConfirmOpen, setIsWarmupConfirmOpen] = useState(false);
   const [isWarmuping, setIsWarmuping] = useState(false);
   const [refreshingIds, setRefreshingIds] = useState<Set<string>>(new Set());
+  const [isOpenAIAdd, setIsOpenAIAdd] = useState(false);
 
   const handleWarmup = async (accountId: string) => {
     setRefreshingIds((prev) => {
@@ -903,6 +906,20 @@ function Accounts() {
         {/* 操作按钮组 */}
         <div className="flex items-center gap-1.5 shrink-0">
           <AddAccountDialog onAdd={handleAddAccount} showText={false} />
+          
+          <button
+            className="px-2.5 lg:px-4 py-2 bg-white dark:bg-base-100 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-base-200 transition-colors flex items-center gap-2 shadow-sm border border-gray-200/50 dark:border-base-300"
+            onClick={() => setIsOpenAIAdd(true)}
+            title={t('accounts.add.openai.title')}
+          >
+            <Bot className="w-4 h-4 text-green-600" />
+            <span className="hidden lg:inline">{t('accounts.add.openai.title')}</span>
+          </button>
+          
+          <AddOpenAIAccountDialog 
+            isOpen={isOpenAIAdd}
+            onClose={() => setIsOpenAIAdd(false)}
+          />
 
           {selectedIds.size > 0 && (
             <>

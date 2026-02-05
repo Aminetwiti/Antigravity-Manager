@@ -257,6 +257,35 @@
             "oauth_error": "OAuth failed: {{error}}",
             "status": {
                 "error_token": "Please enter Refresh Token"
+            },
+            "openai": {
+                "title": "Add OpenAI Account",
+                "tabs": {
+                    "web": "ChatGPT Web",
+                    "api": "OpenAI API"
+                },
+                "web": {
+                    "label": "Web Session",
+                    "desc": "Use Access Token extracted from browser to access ChatGPT Web.",
+                    "email": "Email",
+                    "email_placeholder": "example@openai.com",
+                    "access_token": "Access Token",
+                    "access_token_placeholder": "Paste your access token here (starts with eyJ...)",
+                    "session_token": "Session Token",
+                    "session_token_placeholder": "Paste __Secure-next-auth.session-token (Optional but recommended)",
+                    "btn_validate": "Validate Session"
+                },
+                "api": {
+                    "label": "API Key",
+                    "desc": "Standard OpenAI API usage (Paid).",
+                    "email": "Email (Label)",
+                    "email_placeholder": "Label for this account",
+                    "api_key": "API Key",
+                    "api_key_placeholder": "sk-proj-..."
+                },
+                "error_email": "Please enter email/label",
+                "error_token": "Please enter Access Token",
+                "error_api_key": "Please enter API Key"
             }
         },
         "table": {

@@ -31,7 +31,7 @@ impl SystemIntegration for DesktopIntegration {
         }
 
         // 3. 写入设备 Profile
-        if let Some(ref profile) = account.device_profile {
+        if let Some(ref profile) = account.device_profile() {
             device::write_profile(&storage_path, profile)?;
         }
 
@@ -42,11 +42,21 @@ impl SystemIntegration for DesktopIntegration {
             let _ = fs::copy(&db_path, &backup_path);
         }
         
+        let (access_token, refresh_token, expiry_timestamp) = if let Some(token) = account.token() {
+            (
+                token.access_token.clone(),
+                token.refresh_token.clone(),
+                token.expiry_timestamp,
+            )
+        } else {
+            return Err("Account is not a Google account".to_string());
+        };
+        
         db::inject_token(
             &db_path,
-            &account.token.access_token,
-            &account.token.refresh_token,
-            account.token.expiry_timestamp,
+            &access_token,
+            &refresh_token,
+            expiry_timestamp,
             &account.email,
         )?;
 

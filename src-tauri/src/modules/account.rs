@@ -173,7 +173,7 @@ pub fn add_account(
     // Create new account
     let account_id = Uuid::new_v4().to_string();
     let mut account = Account::new(account_id.clone(), email.clone(), token);
-    account.name = name.clone();
+    *account.name_mut() = name.clone();
 
     // Save account data
     save_account(&account)?;
@@ -185,8 +185,9 @@ pub fn add_account(
         name: name.clone(),
         disabled: false,
         proxy_disabled: false,
-        created_at: account.created_at,
-        last_used: account.last_used,
+        created_at: account.created_at(),
+        last_used: account.last_used(),
+        provider: Some(account.provider.clone()),
     });
 
     // If first account, set as current
@@ -221,15 +222,15 @@ pub fn upsert_account(
         // Update existing account
         match load_account(&account_id) {
             Ok(mut account) => {
-                let old_access_token = account.token.access_token.clone();
-                let old_refresh_token = account.token.refresh_token.clone();
-                account.token = token;
-                account.name = name.clone();
+                let old_access_token = account.token().map(|t| t.access_token.clone());
+                let old_refresh_token = account.token().map(|t| t.refresh_token.clone());
+                account.set_token(token)?;
+                *account.name_mut() = name.clone();
                 // If an account was previously disabled (e.g. invalid_grant), any explicit token upsert
                 // should re-enable it (user manually updated credentials in the UI).
                 if account.disabled
-                    && (account.token.refresh_token != old_refresh_token
-                        || account.token.access_token != old_access_token)
+                    && (account.token().map(|t| &t.refresh_token) != old_refresh_token.as_ref()
+                        || account.token().map(|t| &t.access_token) != old_access_token.as_ref())
                 {
                     account.disabled = false;
                     account.disabled_reason = None;
@@ -253,7 +254,7 @@ pub fn upsert_account(
                 ));
                 // Index exists but file is missing, recreating
                 let mut account = Account::new(account_id.clone(), email.clone(), token);
-                account.name = name.clone();
+                *account.name_mut() = name.clone();
                 save_account(&account)?;
 
                 // Sync name in index
@@ -415,18 +416,24 @@ pub async fn switch_account(
     ));
 
     // 2. Ensure Token is valid (auto-refresh)
-    let fresh_token = oauth::ensure_fresh_token(&account.token, Some(&account.id))
-        .await
-        .map_err(|e| format!("Token refresh failed: {}", e))?;
+    let fresh_token = if let Some(token) = account.token() {
+        oauth::ensure_fresh_token(token, Some(&account.id))
+            .await
+            .map_err(|e| format!("Token refresh failed: {}", e))?
+    } else {
+        return Err("Account is not a Google account, token refresh not supported".to_string());
+    };
 
     // If Token updated, save back to account file
-    if fresh_token.access_token != account.token.access_token {
-        account.token = fresh_token.clone();
-        save_account(&account)?;
+    if let Some(current_token) = account.token() {
+        if fresh_token.access_token != current_token.access_token {
+            account.set_token(fresh_token.clone())?;
+            save_account(&account)?;
+        }
     }
 
     // [FIX] Ensure account has a device profile for isolation
-    if account.device_profile.is_none() {
+    if account.device_profile().is_none() {
         crate::modules::logger::log_info(&format!(
             "Account {} has no bound fingerprint, generating new one for isolation...",
             account.email
@@ -479,7 +486,7 @@ pub fn get_device_profiles(account_id: &str) -> Result<DeviceProfiles, String> {
     let account = load_account(account_id)?;
     Ok(DeviceProfiles {
         current_storage: current,
-        bound_profile: account.device_profile.clone(),
+        bound_profile: account.device_profile().cloned(),
         history: account.device_history.clone(),
         baseline: crate::modules::device::load_global_original(),
     })
@@ -521,7 +528,7 @@ fn apply_profile_to_account(
     label: Option<String>,
     add_history: bool,
 ) -> Result<(), String> {
-    account.device_profile = Some(profile.clone());
+    account.set_device_profile(Some(profile.clone()))?;
     if add_history {
         // Clear 'current' flag
         for h in account.device_history.iter_mut() {
@@ -553,15 +560,14 @@ pub fn restore_device_version(account_id: &str, version_id: &str) -> Result<Devi
     } else if let Some(v) = account.device_history.iter().find(|v| v.id == version_id) {
         v.profile.clone()
     } else if version_id == "current" {
-        account
-            .device_profile
-            .clone()
+        account.device_profile()
+            .cloned()
             .ok_or("No currently bound profile")?
     } else {
         return Err("Device profile version not found".to_string());
     };
 
-    account.device_profile = Some(target_profile.clone());
+    account.set_device_profile(Some(target_profile.clone()))?;
     for h in account.device_history.iter_mut() {
         h.is_current = h.id == version_id;
     }
@@ -594,9 +600,8 @@ pub fn delete_device_version(account_id: &str, version_id: &str) -> Result<(), S
 pub fn apply_device_profile(account_id: &str) -> Result<DeviceProfile, String> {
     use crate::modules::device;
     let mut account = load_account(account_id)?;
-    let profile = account
-        .device_profile
-        .clone()
+    let profile = account.device_profile()
+        .cloned()
         .ok_or("Account has no bound device profile")?;
     let storage_path = device::get_storage_path()?;
     device::write_profile(&storage_path, &profile)?;
@@ -610,7 +615,7 @@ pub fn restore_original_device() -> Result<String, String> {
     if let Some(current_id) = get_current_account_id()? {
         if let Ok(mut account) = load_account(&current_id) {
             if let Some(original) = crate::modules::device::load_global_original() {
-                account.device_profile = Some(original);
+                account.set_device_profile(Some(original))?;
                 for h in account.device_history.iter_mut() {
                     h.is_current = false;
                 }
@@ -772,9 +777,11 @@ pub fn export_accounts_by_ids(account_ids: &[String]) -> Result<crate::models::A
     let export_items: Vec<AccountExportItem> = accounts
         .into_iter()
         .filter(|acc| account_ids.contains(&acc.id))
-        .map(|acc| AccountExportItem {
-            email: acc.email,
-            refresh_token: acc.token.refresh_token,
+        .filter_map(|acc| {
+            acc.token().map(|token| AccountExportItem {
+                email: acc.email,
+                refresh_token: token.refresh_token.clone(),
+            })
         })
         .collect();
 
@@ -790,7 +797,9 @@ pub fn export_accounts() -> Result<Vec<(String, String)>, String> {
     let mut exports = Vec::new();
 
     for account in accounts {
-        exports.push((account.email, account.token.refresh_token));
+        if let Some(token) = account.token() {
+            exports.push((account.email, token.refresh_token.clone()));
+        }
     }
 
     Ok(exports)
@@ -803,62 +812,69 @@ pub async fn fetch_quota_with_retry(account: &mut Account) -> crate::error::AppR
     use reqwest::StatusCode;
 
     // 1. Time-based check - ensure Token is valid first
-    let token = match oauth::ensure_fresh_token(&account.token, Some(&account.id)).await {
-        Ok(t) => t,
-        Err(e) => {
-            if e.contains("invalid_grant") {
-                modules::logger::log_error(&format!(
-                    "Disabling account {} due to invalid_grant during token refresh (quota check)",
-                    account.email
-                ));
-                account.disabled = true;
-                account.disabled_at = Some(chrono::Utc::now().timestamp());
-                account.disabled_reason = Some(format!("invalid_grant: {}", e));
-                let _ = save_account(account);
-                crate::proxy::server::trigger_account_reload(&account.id);
+    let token = if let Some(t) = account.token() {
+        match oauth::ensure_fresh_token(t, Some(&account.id)).await {
+            Ok(t) => t,
+            Err(e) => {
+                if e.contains("invalid_grant") {
+                    modules::logger::log_error(&format!(
+                        "Disabling account {} due to invalid_grant during token refresh (quota check)",
+                        account.email
+                    ));
+                    account.disabled = true;
+                    account.disabled_at = Some(chrono::Utc::now().timestamp());
+                    account.disabled_reason = Some(format!("invalid_grant: {}", e));
+                    let _ = save_account(account);
+                    crate::proxy::server::trigger_account_reload(&account.id);
+                }
+                return Err(AppError::OAuth(e));
             }
-            return Err(AppError::OAuth(e));
         }
+    } else {
+        return Err(AppError::Account("Account is not a Google account".to_string()));
     };
 
-    if token.access_token != account.token.access_token {
-        modules::logger::log_info(&format!("Time-based Token refresh: {}", account.email));
-        account.token = token.clone();
+    if let Some(current_token) = account.token() {
+        if token.access_token != current_token.access_token {
+            modules::logger::log_info(&format!("Time-based Token refresh: {}", account.email));
+            account.set_token(token.clone())?;
 
-        // Get display name (incidental to Token refresh)
-        let name = if account.name.is_none()
-            || account.name.as_ref().map_or(false, |n| n.trim().is_empty())
-        {
-            match oauth::get_user_info(&token.access_token, Some(&account.id)).await {
-                Ok(user_info) => user_info.get_display_name(),
-                Err(_) => None,
-            }
-        } else {
-            account.name.clone()
-        };
+            // Get display name (incidental to Token refresh)
+            let name = if account.name().is_none()
+                || account.name().map_or(false, |n| n.trim().is_empty())
+            {
+                match oauth::get_user_info(&token.access_token, Some(&account.id)).await {
+                    Ok(user_info) => user_info.get_display_name(),
+                    Err(_) => None,
+                }
+            } else {
+                account.name().cloned()
+            };
 
-        account.name = name.clone();
-        upsert_account(account.email.clone(), name, token.clone()).map_err(AppError::Account)?;
+            *account.name_mut() = name.clone();
+            upsert_account(account.email.clone(), name, token.clone()).map_err(AppError::Account)?;
+        }
     }
 
     // 0. Supplement display name (if missing or upper step failed)
-    if account.name.is_none() || account.name.as_ref().map_or(false, |n| n.trim().is_empty()) {
+    if account.name().is_none() || account.name().map_or(false, |n| n.trim().is_empty()) {
         modules::logger::log_info(&format!(
             "Account {} missing display name, attempting to fetch...",
             account.email
         ));
         // Use updated token
-        match oauth::get_user_info(&account.token.access_token, Some(&account.id)).await {
-            Ok(user_info) => {
-                let display_name = user_info.get_display_name();
-                modules::logger::log_info(&format!(
-                    "Successfully fetched display name: {:?}",
-                    display_name
-                ));
-                account.name = display_name.clone();
-                // Save immediately
-                if let Err(e) =
-                    upsert_account(account.email.clone(), display_name, account.token.clone())
+        if let Some(current_token) = account.token() {
+            match oauth::get_user_info(&current_token.access_token, Some(&account.id)).await {
+                Ok(user_info) => {
+                    let display_name = user_info.get_display_name();
+                    modules::logger::log_info(&format!(
+                        "Successfully fetched display name: {:?}",
+                        display_name
+                    ));
+                    *account.name_mut() = display_name.clone();
+                    // Save immediately
+                    if let Err(e) =
+                        upsert_account(account.email.clone(), display_name, current_token.clone())
                 {
                     modules::logger::log_warn(&format!("Failed to save display name: {}", e));
                 }
@@ -870,23 +886,28 @@ pub async fn fetch_quota_with_retry(account: &mut Account) -> crate::error::AppR
     }
 
     // 2. Attempt query
-    let result: crate::error::AppResult<(QuotaData, Option<String>)> =
-        modules::fetch_quota(&account.token.access_token, &account.email, Some(&account.id)).await;
+    let result: crate::error::AppResult<(QuotaData, Option<String>)> = if let Some(current_token) = account.token() {
+        modules::fetch_quota(&current_token.access_token, &account.email, Some(&account.id)).await
+    } else {
+        return Err(AppError::Account("Account is not a Google account".to_string()));
+    };
 
     // Capture potentially updated project_id and save
     if let Ok((ref _q, ref project_id)) = result {
-        if project_id.is_some() && *project_id != account.token.project_id {
-            modules::logger::log_info(&format!(
-                "Detected project_id update ({}), saving...",
-                account.email
-            ));
-            account.token.project_id = project_id.clone();
-            if let Err(e) = upsert_account(
-                account.email.clone(),
-                account.name.clone(),
-                account.token.clone(),
-            ) {
-                modules::logger::log_warn(&format!("Failed to sync project_id: {}", e));
+        if let Some(token_mut) = account.token_mut() {
+            if project_id.is_some() && *project_id != token_mut.project_id {
+                modules::logger::log_info(&format!(
+                    "Detected project_id update ({}), saving...",
+                    account.email
+                ));
+                token_mut.project_id = project_id.clone();
+                if let Err(e) = upsert_account(
+                    account.email.clone(),
+                    account.name().cloned(),
+                    token_mut.clone(),
+                ) {
+                    modules::logger::log_warn(&format!("Failed to sync project_id: {}", e));
+                }
             }
         }
     }
@@ -901,49 +922,57 @@ pub async fn fetch_quota_with_retry(account: &mut Account) -> crate::error::AppR
                 ));
 
                 // Force refresh
-                let token_res = match oauth::refresh_access_token(&account.token.refresh_token, Some(&account.id))
-                    .await
-                {
-                    Ok(t) => t,
-                    Err(e) => {
-                        if e.contains("invalid_grant") {
-                            modules::logger::log_error(&format!(
-                                "Disabling account {} due to invalid_grant during forced refresh (quota check)",
-                                account.email
-                            ));
-                            account.disabled = true;
-                            account.disabled_at = Some(chrono::Utc::now().timestamp());
-                            account.disabled_reason = Some(format!("invalid_grant: {}", e));
-                            let _ = save_account(account);
-                            crate::proxy::server::trigger_account_reload(&account.id);
+                let token_res = if let Some(current_token) = account.token() {
+                    match oauth::refresh_access_token(&current_token.refresh_token, Some(&account.id))
+                        .await
+                    {
+                        Ok(t) => t,
+                        Err(e) => {
+                            if e.contains("invalid_grant") {
+                                modules::logger::log_error(&format!(
+                                    "Disabling account {} due to invalid_grant during forced refresh (quota check)",
+                                    account.email
+                                ));
+                                account.disabled = true;
+                                account.disabled_at = Some(chrono::Utc::now().timestamp());
+                                account.disabled_reason = Some(format!("invalid_grant: {}", e));
+                                let _ = save_account(account);
+                                crate::proxy::server::trigger_account_reload(&account.id);
+                            }
+                            return Err(AppError::OAuth(e));
                         }
-                        return Err(AppError::OAuth(e));
                     }
+                } else {
+                    return Err(AppError::Account("Account is not a Google account".to_string()));
                 };
 
-                let new_token = TokenData::new(
-                    token_res.access_token.clone(),
-                    account.token.refresh_token.clone(),
-                    token_res.expires_in,
-                    account.token.email.clone(),
-                    account.token.project_id.clone(), // Keep original project_id
-                    None,                             // Add None as session_id
-                );
+                let new_token = if let Some(current_token) = account.token() {
+                    TokenData::new(
+                        token_res.access_token.clone(),
+                        current_token.refresh_token.clone(),
+                        token_res.expires_in,
+                        current_token.email.clone(),
+                        current_token.project_id.clone(), // Keep original project_id
+                        None,                             // Add None as session_id
+                    )
+                } else {
+                    return Err(AppError::Account("Account is not a Google account".to_string()));
+                };
 
                 // Re-fetch display name
-                let name = if account.name.is_none()
-                    || account.name.as_ref().map_or(false, |n| n.trim().is_empty())
+                let name = if account.name().is_none()
+                    || account.name().map_or(false, |n| n.trim().is_empty())
                 {
                     match oauth::get_user_info(&token_res.access_token, Some(&account.id)).await {
                         Ok(user_info) => user_info.get_display_name(),
                         Err(_) => None,
                     }
                 } else {
-                    account.name.clone()
+                    account.name().cloned()
                 };
 
-                account.token = new_token.clone();
-                account.name = name.clone();
+                account.set_token(new_token.clone())?;
+                *account.name_mut() = name.clone();
                 upsert_account(account.email.clone(), name, new_token.clone())
                     .map_err(AppError::Account)?;
 
@@ -953,17 +982,19 @@ pub async fn fetch_quota_with_retry(account: &mut Account) -> crate::error::AppR
 
                 // Also handle project_id saving during retry
                 if let Ok((ref _q, ref project_id)) = retry_result {
-                    if project_id.is_some() && *project_id != account.token.project_id {
-                        modules::logger::log_info(&format!(
-                            "Detected update of project_id after retry ({}), saving...",
-                            account.email
-                        ));
-                        account.token.project_id = project_id.clone();
-                        let _ = upsert_account(
-                            account.email.clone(),
-                            account.name.clone(),
-                            account.token.clone(),
-                        );
+                    if let Some(token_mut) = account.token_mut() {
+                        if project_id.is_some() && *project_id != token_mut.project_id {
+                            modules::logger::log_info(&format!(
+                                "Detected update of project_id after retry ({}), saving...",
+                                account.email
+                            ));
+                            token_mut.project_id = project_id.clone();
+                            let _ = upsert_account(
+                                account.email.clone(),
+                                account.name().cloned(),
+                                token_mut.clone(),
+                            );
+                        }
                     }
                 }
 

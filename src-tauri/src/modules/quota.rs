@@ -253,23 +253,32 @@ pub async fn get_valid_token_for_warmup(account: &crate::models::account::Accoun
     let mut account = account.clone();
     
     // Check and auto-refresh token
-    let new_token = crate::modules::oauth::ensure_fresh_token(&account.token, Some(&account.id)).await?;
+    let new_token = if let Some(token) = account.token() {
+        crate::modules::oauth::ensure_fresh_token(token, Some(&account.id)).await?
+    } else {
+        return Err("Account is not a Google account".to_string());
+    };
     
     // If token changed (meant refreshed), save it
-    if new_token.access_token != account.token.access_token {
-        account.token = new_token;
-        if let Err(e) = crate::modules::account::save_account(&account) {
-            crate::modules::logger::log_warn(&format!("[Warmup] Failed to save refreshed token: {}", e));
-        } else {
-            crate::modules::logger::log_info(&format!("[Warmup] Successfully refreshed and saved new token for {}", account.email));
+    if let Some(current_token) = account.token() {
+        if new_token.access_token != current_token.access_token {
+            account.set_token(new_token.clone())?;
+            if let Err(e) = crate::modules::account::save_account(&account) {
+                crate::modules::logger::log_warn(&format!("[Warmup] Failed to save refreshed token: {}", e));
+            } else {
+                crate::modules::logger::log_info(&format!("[Warmup] Successfully refreshed and saved new token for {}", account.email));
+            }
         }
     }
     
     // Fetch project_id
-    let (project_id, _) = fetch_project_id(&account.token.access_token, &account.email, Some(&account.id)).await;
-    let final_pid = project_id.unwrap_or_else(|| "bamboo-precept-lgxtn".to_string());
-    
-    Ok((account.token.access_token, final_pid))
+    let (project_id, _) = if let Some(token) = account.token() {
+        fetch_project_id(&token.access_token, &account.email, Some(&account.id)).await
+    } else {
+        return Err("Account is not a Google account".to_string());
+    };
+    let final_pid = project_id.or_else(|| account.token().and_then(|t| t.project_id.clone())).unwrap_or_else(|| "bamboo-precept-lgxtn".to_string());
+    Ok((account.token().ok_or("No token")?.access_token.clone(), final_pid))
 }
 
 /// Send warmup request via proxy internal API

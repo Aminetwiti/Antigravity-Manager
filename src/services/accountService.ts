@@ -28,6 +28,18 @@ export async function addAccount(email: string, refreshToken: string): Promise<A
     return await invoke('add_account', { email, refreshToken });
 }
 
+export async function addOpenAIWebAccount(email: string, accessToken: string, sessionToken: string): Promise<Account> {
+    return await invoke('add_openai_web_account', { email, accessToken, sessionToken });
+}
+
+export async function addOpenAIAPIAccount(email: string, apiKey: string): Promise<Account> {
+    return await invoke('add_openai_api_account', { email, apiKey });
+}
+
+export async function validateOpenAISession(accessToken: string): Promise<any> {
+    return await invoke('validate_openai_session', { accessToken });
+}
+
 export async function deleteAccount(accountId: string): Promise<void> {
     return await invoke('delete_account', { accountId });
 }

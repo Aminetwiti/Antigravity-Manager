@@ -15,6 +15,11 @@ pub mod security;
 pub mod proxy_pool;
 // 导出 user_token 命令
 pub mod user_token;
+// 导出 openai_accounts 命令
+pub mod openai_accounts;
+
+// Re-export OpenAI account commands
+pub use openai_accounts::{add_openai_web_account, add_openai_api_account, validate_openai_session};
 
 /// 列出所有账号
 #[tauri::command]

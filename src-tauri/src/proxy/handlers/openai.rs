@@ -22,6 +22,9 @@ use crate::proxy::session_manager::SessionManager;
 use tokio::time::Duration;
 use crate::proxy::common::client_adapter::CLIENT_ADAPTERS; // [NEW] Adapter Registry
 use axum::http::HeaderMap;
+use crate::proxy::clients::chatgpt::ChatGPTClient;
+use crate::proxy::mappers::openai::OpenAIContent;
+use uuid::Uuid;
 
 pub async fn handle_chat_completions(
     State(state): State<AppState>,
@@ -185,6 +188,76 @@ pub async fn handle_chat_completions(
 
         last_email = Some(email.clone());
         info!("✓ Using account: {} (type: {})", email, config.request_type);
+
+        // [NEW] ChatGPT Web Routing
+        if access_token.starts_with("eyJ") {
+            debug!("[{}] Routing to ChatGPT Web Client", trace_id);
+            let client = match ChatGPTClient::new(access_token.clone()) {
+                Ok(c) => c,
+                Err(e) => {
+                    last_error = format!("Failed to create ChatGPT client: {}", e);
+                    continue;
+                }
+            };
+
+            // Extract prompt from last user message
+            let prompt = openai_req.messages.iter()
+                .filter(|m| m.role == "user")
+                .last()
+                .and_then(|m| m.content.as_ref())
+                .map(|c| match c {
+                    OpenAIContent::String(s) => s.clone(),
+                    OpenAIContent::Array(parts) => {
+                        parts.iter().filter_map(|p| match p {
+                             crate::proxy::mappers::openai::OpenAIContentBlock::Text { text } => Some(text.as_str()),
+                             _ => None,
+                        }).collect::<Vec<_>>().join("\n")
+                    }
+                })
+                .unwrap_or_default();
+
+            // Conversation ID handling (simplified)
+            let conversation_id = None; // TODO: Extract from request if available
+
+            match client.send_message(prompt, Some(openai_req.model.clone()), conversation_id).await {
+                Ok((text, new_conv_id)) => {
+                    let resp = json!({
+                        "id": new_conv_id.unwrap_or_else(|| format!("chatcmpl-{}", uuid::Uuid::new_v4())),
+                        "object": "chat.completion",
+                        "created": chrono::Utc::now().timestamp(),
+                        "model": openai_req.model,
+                        "choices": [
+                            {
+                                "index": 0,
+                                "message": {
+                                    "role": "assistant",
+                                    "content": text
+                                },
+                                "finish_reason": "stop"
+                            }
+                        ],
+                        "usage": {
+                            "prompt_tokens": 0,
+                            "completion_tokens": 0,
+                            "total_tokens": 0
+                        }
+                    });
+                    return Ok((
+                        StatusCode::OK,
+                        [
+                            ("X-Account-Email", email.as_str()),
+                            ("X-Mapped-Model", mapped_model.as_str()),
+                        ],
+                        Json(resp),
+                    ).into_response());
+                }
+                Err(e) => {
+                    tracing::error!("[ChatGPT] Request failed: {}", e);
+                    last_error = e;
+                    continue;
+                }
+            }
+        }
 
         // 4. 转换请求 (返回内容包含 session_id 和 message_count)
         let (gemini_body, session_id, message_count) = transform_openai_request(&openai_req, &project_id, &mapped_model);

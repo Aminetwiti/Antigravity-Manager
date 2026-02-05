@@ -12,6 +12,8 @@ interface AccountState {
     fetchAccounts: () => Promise<void>;
     fetchCurrentAccount: () => Promise<void>;
     addAccount: (email: string, refreshToken: string) => Promise<void>;
+    addOpenAIWebAccount: (email: string, accessToken: string, sessionToken: string) => Promise<void>;
+    addOpenAIAPIAccount: (email: string, apiKey: string) => Promise<void>;
     deleteAccount: (accountId: string) => Promise<void>;
     deleteAccounts: (accountIds: string[]) => Promise<void>;
     switchAccount: (accountId: string) => Promise<void>;
@@ -64,6 +66,30 @@ export const useAccountStore = create<AccountState>((set, get) => ({
         set({ loading: true, error: null });
         try {
             await accountService.addAccount(email, refreshToken);
+            await get().fetchAccounts();
+            set({ loading: false });
+        } catch (error) {
+            set({ error: String(error), loading: false });
+            throw error;
+        }
+    },
+
+    addOpenAIWebAccount: async (email: string, accessToken: string, sessionToken: string) => {
+        set({ loading: true, error: null });
+        try {
+            await accountService.addOpenAIWebAccount(email, accessToken, sessionToken);
+            await get().fetchAccounts();
+            set({ loading: false });
+        } catch (error) {
+            set({ error: String(error), loading: false });
+            throw error;
+        }
+    },
+
+    addOpenAIAPIAccount: async (email: string, apiKey: string) => {
+        set({ loading: true, error: null });
+        try {
+            await accountService.addOpenAIAPIAccount(email, apiKey);
             await get().fetchAccounts();
             set({ loading: false });
         } catch (error) {

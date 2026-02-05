@@ -3,6 +3,7 @@ mod modules;
 mod commands;
 mod utils;
 mod proxy;  // Proxy service module
+mod auth;   // Authentication modules for different providers
 pub mod error;
 pub mod constants;
 
@@ -468,6 +469,11 @@ pub fn run() {
             commands::user_token::renew_user_token,
             commands::user_token::get_token_ip_bindings,
             commands::user_token::get_user_token_summary,
+            // OpenAI Account commands
+            commands::add_openai_web_account,
+            commands::add_openai_api_account,
+            commands::validate_openai_session,
+            commands::start_openai_oauth_flow,
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application")

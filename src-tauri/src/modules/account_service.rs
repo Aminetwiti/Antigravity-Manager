@@ -45,7 +45,9 @@ impl AccountService {
             Ok((quota_data, new_project_id)) => {
                 account.quota = Some(quota_data);
                 if let Some(pid) = new_project_id {
-                    account.token.project_id = Some(pid);
+                    if let Some(token_mut) = account.token_mut() {
+                        token_mut.project_id = Some(pid);
+                    }
                 }
                 // 保存更新后的账号信息
                 if let Err(e) = modules::account::save_account(&account) {
