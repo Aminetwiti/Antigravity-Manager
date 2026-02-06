@@ -1,6 +1,11 @@
 services:
   antigravity-manager:
-    image: lbjlaq/antigravity-manager:latest
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      args:
+        CACHEBUST: "${CACHEBUST:-1}"
+    image: antigravity-manager:local
     container_name: antigravity-manager
     ports:
       - "8046:8046"

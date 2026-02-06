@@ -2,6 +2,38 @@
 
 本目錄包含 Antigravity Manager 的原生 Headless Docker 部署方案。該方案支持完整的 Web 管理界面、API 反代以及數據持久化，無需複雜的 VNC 或桌面環境。
 
+## 🏗️ 本地構建 (Local Build with Docker Compose)
+
+如果您想從源碼構建最新版本（包含所有最新功能如 OpenAI 账户支持），使用 Docker Compose：
+
+```bash
+# 克隆仓库
+git clone https://github.com/Aminetwiti/Antigravity-Manager
+cd Antigravity-Manager/docker
+
+# 創建環境變量文件
+cp .env.example .env
+# 編輯 .env 設置您的 API_KEY 和其他配置
+
+# 構建並啟動 (首次構建需要 10-15 分鐘)
+docker compose build --no-cache
+docker compose up -d
+
+# 查看日誌
+docker compose logs -f
+```
+
+**強制重新構建（當前端代碼更新時）**：
+```bash
+# 方法 1: 使用 --build 標誌
+docker compose up -d --build
+
+# 方法 2: 增加 CACHEBUST 值
+# 編輯 .env 文件: CACHEBUST=2, 3, 4... (每次+1)
+docker compose build --no-cache
+docker compose up -d
+```
+
 ## 🚀 快速開始
 
 ### 1. 直接拉取鏡像 (推薦)
