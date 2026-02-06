@@ -810,6 +810,9 @@ async fn admin_list_accounts(
         .into_iter()
         .map(|acc| {
             let is_current = current_id.as_ref().map(|id| id == &acc.id).unwrap_or(false);
+            let name = acc.name().cloned();
+            let device_bound = acc.device_profile().is_some();
+            let last_used = acc.last_used();
             let quota = acc.quota.map(|q| QuotaResponse {
                 models: q
                     .models
@@ -824,10 +827,6 @@ async fn admin_list_accounts(
                 subscription_tier: q.subscription_tier,
                 is_forbidden: q.is_forbidden,
             });
-
-            let name = acc.name().cloned();
-            let device_bound = acc.device_profile().is_some();
-            let last_used = acc.last_used();
 
             AccountResponse {
                 id: acc.id,
@@ -891,6 +890,9 @@ async fn admin_get_current_account(
     let response = if let Some(id) = current_id {
         let acc = account::load_account(&id).ok();
         acc.map(|acc| {
+            let name = acc.name().cloned();
+            let device_bound = acc.device_profile().is_some();
+            let last_used = acc.last_used();
             let quota = acc.quota.map(|q| QuotaResponse {
                 models: q
                     .models
@@ -905,10 +907,6 @@ async fn admin_get_current_account(
                 subscription_tier: q.subscription_tier,
                 is_forbidden: q.is_forbidden,
             });
-
-            let name = acc.name().cloned();
-            let device_bound = acc.device_profile().is_some();
-            let last_used = acc.last_used();
 
             AccountResponse {
                 id: acc.id,

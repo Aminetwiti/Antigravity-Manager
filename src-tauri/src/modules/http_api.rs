@@ -243,6 +243,9 @@ async fn list_accounts() -> Result<impl IntoResponse, (StatusCode, Json<ErrorRes
         .into_iter()
         .map(|acc| {
             let is_current = current_id.as_ref().map(|id| id == &acc.id).unwrap_or(false);
+            let name = acc.name().cloned();
+            let device_bound = acc.device_profile().is_some();
+            let last_used = acc.last_used();
             let quota = acc.quota.map(|q| QuotaResponse {
                 models: q.models.into_iter().map(|m| ModelQuota {
                     name: m.name,
@@ -252,10 +255,6 @@ async fn list_accounts() -> Result<impl IntoResponse, (StatusCode, Json<ErrorRes
                 updated_at: Some(q.last_updated),
                 subscription_tier: q.subscription_tier,
             });
-
-            let name = acc.name().cloned();
-            let device_bound = acc.device_profile().is_some();
-            let last_used = acc.last_used();
 
             AccountResponse {
                 id: acc.id,
@@ -286,6 +285,9 @@ async fn get_current_account() -> Result<impl IntoResponse, (StatusCode, Json<Er
     })?;
 
     let response = current.map(|acc| {
+        let name = acc.name().cloned();
+        let device_bound = acc.device_profile().is_some();
+        let last_used = acc.last_used();
         let quota = acc.quota.map(|q| QuotaResponse {
             models: q.models.into_iter().map(|m| ModelQuota {
                 name: m.name,
@@ -295,10 +297,6 @@ async fn get_current_account() -> Result<impl IntoResponse, (StatusCode, Json<Er
             updated_at: Some(q.last_updated),
             subscription_tier: q.subscription_tier,
         });
-
-        let name = acc.name().cloned();
-        let device_bound = acc.device_profile().is_some();
-        let last_used = acc.last_used();
 
         AccountResponse {
             id: acc.id,

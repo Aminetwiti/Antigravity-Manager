@@ -12,10 +12,10 @@ pub async fn add_openai_web_account(
     session_token: String,
 ) -> Result<Account, String> {
     crate::modules::logger::log_info(&format!("Adding OpenAI Web account: {}", email));
-    
+
     // Validate session
     let user_info = crate::auth::openai_web::get_user_info(&access_token).await?;
-    
+
     // Create account
     let account = Account::new_openai_web(
         uuid::Uuid::new_v4().to_string(),
@@ -23,10 +23,10 @@ pub async fn add_openai_web_account(
         access_token,
         session_token,
     );
-    
+
     // Save account
     crate::modules::account::save_account(&account)?;
-    
+
     // Update index
     let mut index = crate::modules::account::load_account_index()?;
     index.accounts.push(crate::models::AccountSummary {
@@ -40,13 +40,13 @@ pub async fn add_openai_web_account(
         last_used: account.last_used(),
     });
     crate::modules::account::save_account_index(&index)?;
-    
+
     // Update tray
     crate::modules::tray::update_tray_menus(&app);
-    
+
     // Reload token pool
     let _ = crate::commands::proxy::reload_proxy_accounts(proxy_state).await;
-    
+
     crate::modules::logger::log_info(&format!("OpenAI Web account added: {}", user_info.email));
     Ok(account)
 }
@@ -60,17 +60,17 @@ pub async fn add_openai_api_account(
     api_key: String,
 ) -> Result<Account, String> {
     crate::modules::logger::log_info(&format!("Adding OpenAI API account: {}", name));
-    
+
     // Create account
     let account = Account::new_openai_api(
         uuid::Uuid::new_v4().to_string(),
         name.clone(),
         api_key,
     );
-    
+
     // Save account
     crate::modules::account::save_account(&account)?;
-    
+
     // Update index
     let mut index = crate::modules::account::load_account_index()?;
     index.accounts.push(crate::models::AccountSummary {
@@ -84,13 +84,13 @@ pub async fn add_openai_api_account(
         last_used: account.last_used(),
     });
     crate::modules::account::save_account_index(&index)?;
-    
+
     // Update tray
     crate::modules::tray::update_tray_menus(&app);
-    
+
     // Reload token pool
     let _ = crate::commands::proxy::reload_proxy_accounts(proxy_state).await;
-    
+
     crate::modules::logger::log_info(&format!("OpenAI API account added: {}", name));
     Ok(account)
 }

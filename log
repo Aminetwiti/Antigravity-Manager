@@ -1,0 +1,411 @@
+
+#22 257.0    Compiling rusqlite v0.32.1
+#22 261.0 error[E0433]: failed to resolve: could not find `__cmd__add_openai_web_account` in `commands`
+#22 261.0    --> src/lib.rs:410:23
+#22 261.0     |
+#22 261.0 410 |             commands::add_openai_web_account,
+#22 261.0     |                       ^^^^^^^^^^^^^^^^^^^^^^ could not find `__cmd__add_openai_web_account` in `commands`
+#22 261.0
+#22 261.0 error[E0433]: failed to resolve: could not find `__cmd__add_openai_api_account` in `commands`
+#22 261.0    --> src/lib.rs:411:23
+#22 261.0     |
+#22 261.0 411 |             commands::add_openai_api_account,
+#22 261.0     |                       ^^^^^^^^^^^^^^^^^^^^^^ could not find `__cmd__add_openai_api_account` in `commands`
+#22 261.0
+#22 261.0 error[E0433]: failed to resolve: could not find `__cmd__validate_openai_session` in `commands`
+#22 261.0    --> src/lib.rs:412:23
+#22 261.0     |
+#22 261.0 412 |             commands::validate_openai_session,
+#22 261.0     |                       ^^^^^^^^^^^^^^^^^^^^^^^ could not find `__cmd__validate_openai_session` in `commands`
+#22 261.0
+#22 261.0 error[E0433]: failed to resolve: could not find `__cmd__start_openai_oauth_flow` in `commands`
+#22 261.0    --> src/lib.rs:413:23
+#22 261.0     |
+#22 261.0 413 |             commands::start_openai_oauth_flow,
+#22 261.0     |                       ^^^^^^^^^^^^^^^^^^^^^^^ could not find `__cmd__start_openai_oauth_flow` in `commands`
+#22 261.0
+#22 261.4 warning: unused import: `engine::general_purpose`
+#22 261.4  --> src/modules/db.rs:2:14
+#22 261.4   |
+#22 261.4 2 | use base64::{engine::general_purpose, Engine as _};
+#22 261.4   |              ^^^^^^^^^^^^^^^^^^^^^^^
+#22 261.4   |
+#22 261.4   = note: `#[warn(unused_imports)]` on by default
+#22 261.4
+#22 261.4 warning: unused import: `tauri::State`
+#22 261.4  --> src/commands/user_token.rs:1:5
+#22 261.4   |
+#22 261.4 1 | use tauri::State;
+#22 261.4   |     ^^^^^^^^^^^^
+#22 261.4
+#22 261.4 warning: unused imports: `add_openai_api_account`, `add_openai_web_account`, `start_openai_oauth_flow`, and `validate_openai_session`
+#22 261.4   --> src/commands/mod.rs:22:27
+#22 261.4    |
+#22 261.4 22 | pub use openai_accounts::{add_openai_web_account, add_openai_api_account, validate_openai_session, start_openai_oauth_flow};
+#22 261.4    |                           ^^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^^
+#22 261.4
+#22 261.4 warning: unused imports: `AccountExportItem` and `AccountExportResponse`
+#22 261.4    --> src/proxy/server.rs:176:21
+#22 261.4     |
+#22 261.4 176 | use crate::models::{AccountExportItem, AccountExportResponse};
+#22 261.4     |                     ^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^
+#22 261.4
+#22 261.5 warning: unused import: `chatgpt::*`
+#22 261.5  --> src/proxy/clients/mod.rs:3:9
+#22 261.5   |
+#22 261.5 3 | pub use chatgpt::*;
+#22 261.5   |         ^^^^^^^^^^
+#22 261.5
+#22 261.5 warning: unused import: `uuid::Uuid`
+#22 261.5   --> src/proxy/handlers/openai.rs:27:5
+#22 261.5    |
+#22 261.5 27 | use uuid::Uuid;
+#22 261.5    |     ^^^^^^^^^^
+#22 261.5
+#22 261.5 warning: unused import: `RetryStrategy`
+#22 261.5  --> src/proxy/handlers/gemini.rs:9:109
+#22 261.5   |
+#22 261.5 9 | use crate::proxy::handlers::common::{determine_retry_strategy, apply_retry_strategy, should_rotate_account, RetryStrategy};
+#22 261.5   |                                                                                                             ^^^^^^^^^^^^^
+#22 261.5
+#22 261.5 warning: unused import: `tokio::time::Duration`
+#22 261.5   --> src/proxy/handlers/gemini.rs:11:5
+#22 261.5    |
+#22 261.5 11 | use tokio::time::Duration;
+#22 261.5    |     ^^^^^^^^^^^^^^^^^^^^^
+#22 261.5
+#22 261.5 warning: unused import: `json`
+#22 261.5  --> src/proxy/mappers/openai/collector.rs:7:18
+#22 261.5   |
+#22 261.5 7 | use serde_json::{json, Value};
+#22 261.5   |                  ^^^^
+#22 261.5
+#22 261.5 warning: unused import: `std::io`
+#22 261.5  --> src/proxy/mappers/openai/collector.rs:9:5
+#22 261.5   |
+#22 261.5 9 | use std::io;
+#22 261.5   |     ^^^^^^^
+#22 261.5
+#22 261.5 warning: unused import: `body::Body`
+#22 261.5  --> src/proxy/middleware/ip_filter.rs:6:5
+#22 261.5   |
+#22 261.5 6 |     body::Body,
+#22 261.5   |     ^^^^^^^^^^
+#22 261.5
+#22 261.5 warning: unused import: `config::get_thinking_budget_config`
+#22 261.5   --> src/proxy/mod.rs:30:9
+#22 261.5    |
+#22 261.5 30 | pub use config::get_thinking_budget_config;
+#22 261.5    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#22 261.5
+#22 261.5 warning: unused import: `config::ThinkingBudgetConfig`
+#22 261.5   --> src/proxy/mod.rs:35:9
+#22 261.5    |
+#22 261.5 35 | pub use config::ThinkingBudgetConfig;
+#22 261.5    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#22 261.5
+#22 261.5 warning: unused import: `config::ThinkingBudgetMode`
+#22 261.5   --> src/proxy/mod.rs:36:9
+#22 261.5    |
+#22 261.5 36 | pub use config::ThinkingBudgetMode;
+#22 261.5    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+#22 261.5
+#22 261.5 warning: unused imports: `ProxyPoolManager`, `get_global_proxy_pool`, and `init_global_proxy_pool`
+#22 261.5   --> src/proxy/mod.rs:43:22
+#22 261.5    |
+#22 261.5 43 | pub use proxy_pool::{ProxyPoolManager, get_global_proxy_pool, init_global_proxy_pool};
+#22 261.5    |                      ^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^
+#22 261.5
+#22 261.5 warning: unused imports: `Account`, `ProviderCredentials`, and `Provider`
+#22 261.5  --> src/auth/openai_oauth.rs:1:30
+#22 261.5   |
+#22 261.5 1 | use crate::models::account::{Account, Provider, ProviderCredentials};
+#22 261.5   |                              ^^^^^^^  ^^^^^^^^  ^^^^^^^^^^^^^^^^^^^
+#22 261.5
+#22 261.5 warning: unused import: `crate::proxy::server::AppState`
+#22 261.5  --> src/auth/openai_oauth.rs:2:5
+#22 261.5   |
+#22 261.5 2 | use crate::proxy::server::AppState;
+#22 261.5   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#22 261.5
+#22 261.5 warning: unused import: `Redirect`
+#22 261.5  --> src/auth/openai_oauth.rs:5:36
+#22 261.5   |
+#22 261.5 5 |     response::{Html, IntoResponse, Redirect},
+#22 261.5   |                                    ^^^^^^^^
+#22 261.5
+#22 261.5 warning: unused import: `openai_web::*`
+#22 261.5  --> src/auth/mod.rs:4:9
+#22 261.5   |
+#22 261.5 4 | pub use openai_web::*;
+#22 261.5   |         ^^^^^^^^^^^^^
+#22 261.5
+#22 261.5 warning: unused import: `warn`
+#22 261.5   --> src/lib.rs:12:21
+#22 261.5    |
+#22 261.5 12 | use tracing::{info, warn, error};
+#22 261.5    |                     ^^^^
+#22 261.5
+#22 262.5 warning: unused variable: `account_id`
+#22 262.5    --> src/modules/quota.rs:291:5
+#22 262.5     |
+#22 262.5 291 |     account_id: Option<&str>,
+#22 262.5     |     ^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_account_id`
+#22 262.5     |
+#22 262.5     = note: `#[warn(unused_variables)]` on by default
+#22 262.5
+#22 262.8 error[E0382]: borrow of partially moved value: `acc`
+#22 262.8    --> src/modules/http_api.rs:256:24
+#22 262.8     |
+#22 262.8 246 |               let quota = acc.quota.map(|q| QuotaResponse {
+#22 262.8     |  _________________________---------_-
+#22 262.8     | |                         |
+#22 262.8     | |                         help: consider calling `.as_ref()` or `.as_mut()` to borrow the type's contents
+#22 262.8 247 | |                 models: q.models.into_iter().map(|m| ModelQuota {
+#22 262.8 248 | |                     name: m.name,
+#22 262.8 249 | |                     percentage: m.percentage,
+#22 262.8 ...   |
+#22 262.8 253 | |                 subscription_tier: q.subscription_tier,
+#22 262.8 254 | |             });
+#22 262.8     | |______________- `acc.quota` partially moved due to this method call
+#22 262.8 255 |
+#22 262.8 256 |               let name = acc.name().cloned();
+#22 262.8     |                          ^^^ value borrowed here after partial move
+#22 262.8     |
+#22 262.8 note: `std::option::Option::<T>::map` takes ownership of the receiver `self`, which moves `acc.quota`
+#22 262.8    --> /rustc/4eb161250e340c8f48f66e2b929ef4a5bed7c181/library/core/src/option.rs:1114:22
+#22 262.8     = note: partial move occurs because `acc.quota` has type `std::option::Option<QuotaData>`, which does not implement the `Copy` trait
+#22 262.8 help: you can `clone` the value and consume it, but this might not be your desired behavior
+#22 262.8     |
+#22 262.8 246 |             let quota = acc.quota.clone().map(|q| QuotaResponse {
+#22 262.8     |                                  ++++++++
+#22 262.8
+#22 262.8 error[E0382]: borrow of partially moved value: `acc`
+#22 262.8    --> src/modules/http_api.rs:299:20
+#22 262.8     |
+#22 262.8 289 |           let quota = acc.quota.map(|q| QuotaResponse {
+#22 262.8     |  _____________________---------_-
+#22 262.8     | |                     |
+#22 262.8     | |                     help: consider calling `.as_ref()` or `.as_mut()` to borrow the type's contents
+#22 262.8 290 | |             models: q.models.into_iter().map(|m| ModelQuota {
+#22 262.8 291 | |                 name: m.name,
+#22 262.8 292 | |                 percentage: m.percentage,
+#22 262.8 ...   |
+#22 262.8 296 | |             subscription_tier: q.subscription_tier,
+#22 262.8 297 | |         });
+#22 262.8     | |__________- `acc.quota` partially moved due to this method call
+#22 262.8 298 |
+#22 262.8 299 |           let name = acc.name().cloned();
+#22 262.8     |                      ^^^ value borrowed here after partial move
+#22 262.8     |
+#22 262.8 note: `std::option::Option::<T>::map` takes ownership of the receiver `self`, which moves `acc.quota`
+#22 262.8    --> /rustc/4eb161250e340c8f48f66e2b929ef4a5bed7c181/library/core/src/option.rs:1114:22
+#22 262.8     = note: partial move occurs because `acc.quota` has type `std::option::Option<QuotaData>`, which does not implement the `Copy` trait
+#22 262.8 help: you can `clone` the value and consume it, but this might not be your desired behavior
+#22 262.8     |
+#22 262.8 289 |         let quota = acc.quota.clone().map(|q| QuotaResponse {
+#22 262.8     |                              ++++++++
+#22 262.8
+#22 264.2 warning: value assigned to `wait_ms` is never read
+#22 264.2     --> src/proxy/token_manager.rs:1422:29
+#22 264.2      |
+#22 264.2 1422 |                     let mut wait_ms = 0;
+#22 264.2      |                             ^^^^^^^
+#22 264.2      |
+#22 264.2      = help: maybe it is overwritten before being read?
+#22 264.2      = note: `#[warn(unused_assignments)]` on by default
+#22 264.2
+#22 264.8 warning: unused variable: `reference_images`
+#22 264.8     --> src/proxy/handlers/openai.rs:1861:13
+#22 264.8      |
+#22 264.8 1861 |     let mut reference_images: Vec<String> = Vec::new(); // Store base64 data of reference images
+#22 264.8      |             ^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_reference_images`
+#22 264.8
+#22 264.9 warning: variable does not need to be mutable
+#22 264.9     --> src/proxy/handlers/openai.rs:1861:9
+#22 264.9      |
+#22 264.9 1861 |     let mut reference_images: Vec<String> = Vec::new(); // Store base64 data of reference images
+#22 264.9      |         ----^^^^^^^^^^^^^^^^
+#22 264.9      |         |
+#22 264.9      |         help: remove this `mut`
+#22 264.9      |
+#22 264.9      = note: `#[warn(unused_mut)]` on by default
+#22 264.9
+#22 264.9 warning: variable does not need to be mutable
+#22 264.9     --> src/proxy/handlers/openai.rs:1988:10
+#22 264.9      |
+#22 264.9 1988 |     let (mut image_config, _) = crate::proxy::mappers::common_utils::parse_image_config_with_params(
+#22 264.9      |          ----^^^^^^^^^^^^
+#22 264.9      |          |
+#22 264.9      |          help: remove this `mut`
+#22 264.9
+#22 264.9 warning: variable does not need to be mutable
+#22 264.9     --> src/proxy/handlers/openai.rs:2038:9
+#22 264.9      |
+#22 264.9 2038 |     let mut gemini_body = json!({
+#22 264.9      |         ----^^^^^^^^^^^
+#22 264.9      |         |
+#22 264.9      |         help: remove this `mut`
+#22 264.9
+#22 265.8 warning: unused variable: `retry_after`
+#22 265.8    --> src/proxy/handlers/gemini.rs:376:13
+#22 265.8     |
+#22 265.8 376 |         let retry_after = response.headers().get("Retry-After").and_then(|h| h.to_str().ok()).map(|s| s.to_string());
+#22 265.8     |             ^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_retry_after`
+#22 265.8
+#22 266.3 error[E0382]: borrow of partially moved value: `acc`
+#22 266.3    --> src/proxy/server.rs:828:24
+#22 266.3     |
+#22 266.3 813 |               let quota = acc.quota.map(|q| QuotaResponse {
+#22 266.3     |  _________________________---------_-
+#22 266.3     | |                         |
+#22 266.3     | |                         help: consider calling `.as_ref()` or `.as_mut()` to borrow the type's contents
+#22 266.3 814 | |                 models: q
+#22 266.3 815 | |                     .models
+#22 266.3 816 | |                     .into_iter()
+#22 266.3 ...   |
+#22 266.3 825 | |                 is_forbidden: q.is_forbidden,
+#22 266.3 826 | |             });
+#22 266.3     | |______________- `acc.quota` partially moved due to this method call
+#22 266.3 827 |
+#22 266.3 828 |               let name = acc.name().cloned();
+#22 266.3     |                          ^^^ value borrowed here after partial move
+#22 266.3     |
+#22 266.3 note: `std::option::Option::<T>::map` takes ownership of the receiver `self`, which moves `acc.quota`
+#22 266.3    --> /rustc/4eb161250e340c8f48f66e2b929ef4a5bed7c181/library/core/src/option.rs:1114:22
+#22 266.3     = note: partial move occurs because `acc.quota` has type `std::option::Option<QuotaData>`, which does not implement the `Copy` trait
+#22 266.3 help: you can `clone` the value and consume it, but this might not be your desired behavior
+#22 266.3     |
+#22 266.3 813 |             let quota = acc.quota.clone().map(|q| QuotaResponse {
+#22 266.3     |                                  ++++++++
+#22 266.3
+#22 266.3 error[E0382]: borrow of partially moved value: `acc`
+#22 266.3    --> src/proxy/server.rs:909:24
+#22 266.3     |
+#22 266.3 894 |               let quota = acc.quota.map(|q| QuotaResponse {
+#22 266.3     |  _________________________---------_-
+#22 266.3     | |                         |
+#22 266.3     | |                         help: consider calling `.as_ref()` or `.as_mut()` to borrow the type's contents
+#22 266.3 895 | |                 models: q
+#22 266.3 896 | |                     .models
+#22 266.3 897 | |                     .into_iter()
+#22 266.3 ...   |
+#22 266.3 906 | |                 is_forbidden: q.is_forbidden,
+#22 266.3 907 | |             });
+#22 266.3     | |______________- `acc.quota` partially moved due to this method call
+#22 266.3 908 |
+#22 266.3 909 |               let name = acc.name().cloned();
+#22 266.3     |                          ^^^ value borrowed here after partial move
+#22 266.3     |
+#22 266.3 note: `std::option::Option::<T>::map` takes ownership of the receiver `self`, which moves `acc.quota`
+#22 266.3    --> /rustc/4eb161250e340c8f48f66e2b929ef4a5bed7c181/library/core/src/option.rs:1114:22
+#22 266.3     = note: partial move occurs because `acc.quota` has type `std::option::Option<QuotaData>`, which does not implement the `Copy` trait
+#22 266.3 help: you can `clone` the value and consume it, but this might not be your desired behavior
+#22 266.3     |
+#22 266.3 894 |             let quota = acc.quota.clone().map(|q| QuotaResponse {
+#22 266.3     |                                  ++++++++
+#22 266.3
+#22 266.8 warning: unused variable: `id`
+#22 266.8     --> src/proxy/server.rs:1525:10
+#22 266.8      |
+#22 266.8 1525 |     Path(id): Path<String>,
+#22 266.8      |          ^^ help: if this is intentional, prefix it with an underscore: `_id`
+#22 266.8
+#22 267.1 warning: unused variable: `state`
+#22 267.1     --> src/proxy/server.rs:3266:11
+#22 267.1      |
+#22 267.1 3266 |     State(state): State<AppState>,
+#22 267.1      |           ^^^^^ help: if this is intentional, prefix it with an underscore: `_state`
+#22 267.1
+#22 270.9 warning: unused import: `Engine`
+#22 270.9  --> src/modules/db.rs:2:39
+#22 270.9   |
+#22 270.9 2
+| use base64::{engine::general_purpose, Engine as _};
+#22 270.9   |                                       ^^^^^^
+#22 270.9
+#22 270.9 warning: unused import: `futures::TryFutureExt`
+#22 270.9   --> src/proxy/server.rs:11:5
+#22 270.9    |
+#22 270.9 11 | use futures::TryFutureExt;
+#22 270.9    |     ^^^^^^^^^^^^^^^^^^^^^
+#22 270.9
+#22 270.9 warning: unused import: `Manager`
+#22 270.9   --> src/auth/openai_oauth.rs:15:33
+#22 270.9    |
+#22 270.9 15 | use tauri::{AppHandle, Emitter, Manager};
+#22 270.9    |                                 ^^^^^^^
+#22 270.9
+#22 272.1 warning: unused variable: `schema`
+#22 272.1   --> src/proxy/common/tool_adapter.rs:26:27
+#22 272.1    |
+#22 272.1 26 |     fn pre_process(&self, schema: &mut Value) -> Result<(), String> {
+#22 272.1    |                           ^^^^^^ help: if this is intentional, prefix it with an underscore: `_schema`
+#22 272.1
+#22 272.1 warning: unused variable: `schema`
+#22 272.1   --> src/proxy/common/tool_adapter.rs:39:28
+#22 272.1    |
+#22 272.1 39 |     fn post_process(&self, schema: &mut Value) -> Result<(), String> {
+#22 272.1    |                            ^^^^^^ help: if this is intentional, prefix it with an underscore: `_schema`
+#22 272.1
+#22 272.8 warning: unused variable: `global_thought_sig`
+#22 272.8   --> src/proxy/mappers/openai/request.rs:63:9
+#22 272.8    |
+#22 272.8 63 |     let global_thought_sig = get_thought_signature();
+#22 272.8    |         ^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_global_thought_sig`
+#22 272.8
+#22 275.5 Some errors have detailed explanations: E0382, E0433.
+#22 275.5 For more information about an error, try `rustc --explain E0382`.
+#22 275.6 warning: `antigravity_tools` (lib) generated 35 warnings
+#22 275.6 error: could not compile `antigravity_tools` (lib) due to 8 previous errors; 35 warnings emitted
+#22 275.8 failed to build app: failed to build app
+#22 275.8        Error failed to build app: failed to build app
+#22 ERROR: process "/bin/sh -c npm run tauri build" did not complete successfully: exit code: 1
+------
+> [tauri-builder 12/12] RUN npm run tauri build:
+272.8    |
+272.8 63 |     let global_thought_sig = get_thought_signature();
+272.8    |         ^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_global_thought_sig`
+272.8
+275.5 Some errors have detailed explanations: E0382, E0433.
+275.5 For more information about an error, try `rustc --explain E0382`.
+275.6 warning: `antigravity_tools` (lib) generated 35 warnings
+275.6 error: could not compile `antigravity_tools` (lib) due to 8 previous errors; 35 warnings emitted
+275.8 failed to build app: failed to build app
+275.8        Error failed to build app: failed to build app
+------
+Dockerfile:72
+--------------------
+70 |
+71 |     # Build with Tauri (Frontend + Backend)
+72 | >>> RUN npm run tauri build
+73 |
+74 |     # --- Final Runtime Stage ---
+--------------------
+failed to solve: process "/bin/sh -c npm run tauri build" did not complete successfully: exit code: 1
+exit status 1
+========================================
+Deployment failed: Command execution failed (exit code 1): docker exec cskkg4ockss0gc0w0wks08cg bash -c 'COOLIFY_BRANCH=main COOLIFY_RESOURCE_UUID=ewgsw0ckcowskc8ss4csok48  docker compose --env-file /artifacts/build-time.env --project-name ewgsw0ckcowskc8ss4csok48 --project-directory /artifacts/cskkg4ockss0gc0w0wks08cg -f /artifacts/cskkg4ockss0gc0w0wks08cg/docker/docker-compose.yml build --pull --build-arg COOLIFY_URL --build-arg COOLIFY_FQDN --build-arg SERVICE_URL_ANTIGRAVITY_MANAGER --build-arg SERVICE_FQDN_ANTIGRAVITY_MANAGER --build-arg LOG_LEVEL --build-arg WEB_PASSWORD --build-arg PORT --build-arg CACHEBUST --build-arg COOLIFY_BUILD_SECRETS_HASH=f54463b661cdbc9c867d623bf6c9c13ffe5e77a38374ca1f332d1dc99fab7434'
+Error: Dockerfile:72
+--------------------
+70 |
+71 |     # Build with Tauri (Frontend + Backend)
+72 | >>> RUN npm run tauri build
+73 |
+74 |     # --- Final Runtime Stage ---
+--------------------
+failed to solve: process "/bin/sh -c npm run tauri build" did not complete successfully: exit code: 1
+exit status 1
+Error type: RuntimeException
+Error code: 0
+Location: /var/www/html/app/Traits/ExecuteRemoteCommand.php:243
+Stack trace (first 5 lines):
+#0 /var/www/html/app/Traits/ExecuteRemoteCommand.php(104): App\Jobs\ApplicationDeploymentJob->executeCommandWithProcess()
+#1 /var/www/html/vendor/laravel/framework/src/Illuminate/Collections/Traits/EnumeratesValues.php(271): App\Jobs\ApplicationDeploymentJob->{closure:App\Traits\ExecuteRemoteCommand::execute_remote_command():71}()
+#2 /var/www/html/app/Traits/ExecuteRemoteCommand.php(71): Illuminate\Support\Collection->each()
+#3 /var/www/html/app/Jobs/ApplicationDeploymentJob.php(730): App\Jobs\ApplicationDeploymentJob->execute_remote_command()
+#4 /var/www/html/app/Jobs/ApplicationDeploymentJob.php(467): App\Jobs\ApplicationDeploymentJob->deploy_docker_compose_buildpack()
+========================================
+Gracefully shutting down build container: cskkg4ockss0gc0w0wks08cg
+[CMD]: docker stop -t 30 cskkg4ockss0gc0w0wks08cg
+cskkg4ockss0gc0w0wks08cg

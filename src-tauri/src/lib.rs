@@ -407,10 +407,10 @@ pub fn run() {
             commands::user_token::get_token_ip_bindings,
             commands::user_token::get_user_token_summary,
             // OpenAI Account commands
-            commands::add_openai_web_account,
-            commands::add_openai_api_account,
-            commands::validate_openai_session,
-            commands::start_openai_oauth_flow,
+            commands::openai_accounts::add_openai_web_account,
+            commands::openai_accounts::add_openai_api_account,
+            commands::openai_accounts::validate_openai_session,
+            commands::openai_accounts::start_openai_oauth_flow,
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application")

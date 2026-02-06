@@ -123,15 +123,15 @@ pub async fn switch_account(
     let service = modules::account_service::AccountService::new(
         crate::modules::integration::SystemManager::Desktop(app.clone())
     );
-    
+
     service.switch_account(&account_id).await?;
-    
+
     // 同步托盘
     crate::modules::tray::update_tray_menus(&app);
 
     // [FIX #820] Notify proxy to clear stale session bindings and reload accounts
     let _ = crate::commands::proxy::reload_proxy_accounts(proxy_state).await;
-    
+
     Ok(())
 }
 

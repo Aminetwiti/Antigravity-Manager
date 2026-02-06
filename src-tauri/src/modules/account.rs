@@ -771,9 +771,9 @@ pub fn toggle_proxy_status(
 /// Export accounts by IDs (for backup/migration)
 pub fn export_accounts_by_ids(account_ids: &[String]) -> Result<crate::models::AccountExportResponse, String> {
     use crate::models::{AccountExportItem, AccountExportResponse};
-    
+
     let accounts = list_accounts()?;
-    
+
     let export_items: Vec<AccountExportItem> = accounts
         .into_iter()
         .filter(|acc| account_ids.contains(&acc.id))
