@@ -1,7 +1,7 @@
 services:
   antigravity-manager:
     build:
-      context: ..
+      context: .
       dockerfile: docker/Dockerfile
       args:
         CACHEBUST: "${CACHEBUST:-1}"
