@@ -22,8 +22,8 @@ error() {
 
 log "Starting deployment of Antigravity Manager..."
 
-# 1. Check and Clean Port 8045
-PORT=8045
+# 1. Check and Clean Port 8046
+PORT=8046
 log "Checking port $PORT..."
 
 # Try to find the PID using the port

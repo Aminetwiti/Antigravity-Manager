@@ -157,6 +157,22 @@ pub fn run() {
                         }
                     }
 
+                    // [NEW] 支持通过环境变量注入 端口
+                    // 优先级：ABV_PORT > PORT > 配置文件
+                    let env_port = std::env::var("ABV_PORT")
+                        .or_else(|_| std::env::var("PORT"))
+                        .ok();
+
+                    if let Some(port_str) = env_port {
+                        if let Ok(port) = port_str.parse::<u16>() {
+                            info!("Using Port from environment variable: {}", port);
+                            config.proxy.port = port;
+                            modified = true;
+                        } else {
+                            warn!("Invalid PORT: {}, ignoring", port_str);
+                        }
+                    }
+
                     info!("--------------------------------------------------");
                     info!("🚀 Headless mode proxy service starting...");
                     info!("📍 Port: {}", config.proxy.port);

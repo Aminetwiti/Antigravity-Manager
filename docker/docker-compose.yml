@@ -4,10 +4,11 @@ services:
     container_name: antigravity-manager
     network_mode: host  # 使用宿主机网络，可直接访问 localhost:17771 等代理端口
     # ports:  # host 模式不需要端口映射
-    #   - "8045:8045"
+    #   - "8046:8046"
     volumes:
       - ~/.antigravity_tools:/root/.antigravity_tools
     environment:
       - LOG_LEVEL=info
+      - PORT=8046
       - API_KEY=your-secret-key  # [重要] 請設置您的安全密鑰，若不設置則在日誌中查看隨機密鑰
     restart: unless-stopped
