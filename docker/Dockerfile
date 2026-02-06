@@ -1,23 +1,5 @@
-# --- Frontend Build Stage ---
-FROM node:20-slim AS frontend-builder
-ARG USE_MIRROR=auto
-WORKDIR /app
-
-# Use npm mirror if needed
-RUN if [ "$USE_MIRROR" = "true" ] || ( [ "$USE_MIRROR" = "auto" ] && ! timeout 3 bash -c "</dev/tcp/www.google.com/80" 2>/dev/null ); then \
-    echo "Using npm mirror..."; \
-    npm config set registry https://registry.npmmirror.com; \
-    else \
-    echo "Using default npm registry..."; \
-    fi
-
-COPY package*.json ./
-RUN npm install
-COPY . .
-RUN npm run build
-
-# --- Backend Build Stage ---
-FROM rust:1.85-slim AS backend-builder
+# --- Tauri Build Stage (Frontend + Backend) ---
+FROM rust:1.85-slim AS tauri-builder
 ARG USE_MIRROR=auto
 
 # Conditionally use Aliyun mirror for APT
@@ -29,8 +11,9 @@ RUN if [ "$USE_MIRROR" = "true" ] || ( [ "$USE_MIRROR" = "auto" ] && ! timeout 3
     echo "Using default APT sources..."; \
     fi
 
-# Install build dependencies
+# Install Node.js and build dependencies for Tauri
 RUN apt-get update && apt-get install -y \
+    curl \
     pkg-config \
     libssl-dev \
     libsqlite3-dev \
@@ -39,6 +22,19 @@ RUN apt-get update && apt-get install -y \
     libayatana-appindicator3-dev \
     librsvg2-dev \
     && rm -rf /var/lib/apt/lists/*
+
+# Install Node.js 20
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && \
+    rm -rf /var/lib/apt/lists/*
+
+# Use npm mirror if needed
+RUN if [ "$USE_MIRROR" = "true" ] || ( [ "$USE_MIRROR" = "auto" ] && ! timeout 3 bash -c "</dev/tcp/www.google.com/80" 2>/dev/null ); then \
+    echo "Using npm mirror..."; \
+    npm config set registry https://registry.npmmirror.com; \
+    else \
+    echo "Using default npm registry..."; \
+    fi
 
 # Use Aliyun mirror for Cargo if needed (Sparse Index)
 ENV CARGO_HTTP_MULTIPLEXING=false
@@ -51,12 +47,16 @@ RUN if [ "$USE_MIRROR" = "true" ] || ( [ "$USE_MIRROR" = "auto" ] && ! timeout 3
     fi
 
 WORKDIR /app
-# Copy the whole project to build the Rust workspace
+
+# Copy package files and install dependencies
+COPY package*.json ./
+RUN npm install
+
+# Copy the entire project
 COPY . .
 
-# Build the Rust backend in release mode
-WORKDIR /app/src-tauri
-RUN cargo build --release --bin antigravity_tools
+# Build with Tauri (Frontend + Backend)
+RUN npm run tauri build
 
 # --- Final Runtime Stage ---
 FROM debian:bookworm-slim
@@ -83,11 +83,11 @@ RUN apt-get update && apt-get install -y \
     librsvg2-2 \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy binary from builder
-COPY --from=backend-builder /app/src-tauri/target/release/antigravity_tools /app/antigravity-tools
+# Copy binary from Tauri builder
+COPY --from=tauri-builder /app/src-tauri/target/release/antigravity_tools /app/antigravity-tools
 
-# Copy frontend dist from builder
-COPY --from=frontend-builder /app/dist /app/dist
+# Copy frontend dist from Tauri builder
+COPY --from=tauri-builder /app/dist /app/dist
 
 # Set environment variables
 ENV ABV_DIST_PATH=/app/dist

@@ -1665,7 +1665,7 @@ impl TokenManager {
         Ok(())
     }
 
-    /// 保存 project_id 到账号文件
+    /// 保存 project_id 到账号文件 (Google accounts only)
     async fn save_project_id(&self, account_id: &str, project_id: &str) -> Result<(), String> {
         let entry = self.tokens.get(account_id)
             .ok_or("账号不存在")?;
@@ -1676,7 +1676,19 @@ impl TokenManager {
             &std::fs::read_to_string(path).map_err(|e| format!("读取文件失败: {}", e))?
         ).map_err(|e| format!("解析 JSON 失败: {}", e))?;
 
-        content["token"]["project_id"] = serde_json::Value::String(project_id.to_string());
+        // [PHASE 2] Only write project_id for accounts that have a token field
+        if content.get("token").is_some() {
+            content["token"]["project_id"] = serde_json::Value::String(project_id.to_string());
+        } else if let Some(creds) = content.get_mut("credentials") {
+            if creds.get("token").is_some() {
+                creds["token"]["project_id"] = serde_json::Value::String(project_id.to_string());
+            } else {
+                // OpenAI accounts - no token field, skip
+                return Ok(());
+            }
+        } else {
+            return Ok(());
+        }
 
         std::fs::write(path, serde_json::to_string_pretty(&content).unwrap())
             .map_err(|e| format!("写入文件失败: {}", e))?;
@@ -1685,7 +1697,7 @@ impl TokenManager {
         Ok(())
     }
 
-    /// 保存刷新后的 token 到账号文件
+    /// 保存刷新后的 token 到账号文件 (Google accounts only)
     async fn save_refreshed_token(&self, account_id: &str, token_response: &crate::modules::oauth::TokenResponse) -> Result<(), String> {
         let entry = self.tokens.get(account_id)
             .ok_or("账号不存在")?;
@@ -1698,9 +1710,23 @@ impl TokenManager {
 
         let now = chrono::Utc::now().timestamp();
 
-        content["token"]["access_token"] = serde_json::Value::String(token_response.access_token.clone());
-        content["token"]["expires_in"] = serde_json::Value::Number(token_response.expires_in.into());
-        content["token"]["expiry_timestamp"] = serde_json::Value::Number((now + token_response.expires_in).into());
+        // [PHASE 2] Only write token data for accounts that have a token field
+        if content.get("token").is_some() {
+            content["token"]["access_token"] = serde_json::Value::String(token_response.access_token.clone());
+            content["token"]["expires_in"] = serde_json::Value::Number(token_response.expires_in.into());
+            content["token"]["expiry_timestamp"] = serde_json::Value::Number((now + token_response.expires_in).into());
+        } else if let Some(creds) = content.get_mut("credentials") {
+            if creds.get("token").is_some() {
+                creds["token"]["access_token"] = serde_json::Value::String(token_response.access_token.clone());
+                creds["token"]["expires_in"] = serde_json::Value::Number(token_response.expires_in.into());
+                creds["token"]["expiry_timestamp"] = serde_json::Value::Number((now + token_response.expires_in).into());
+            } else {
+                // OpenAI accounts - no token to refresh, skip
+                return Ok(());
+            }
+        } else {
+            return Ok(());
+        }
 
         std::fs::write(path, serde_json::to_string_pretty(&content).unwrap())
             .map_err(|e| format!("写入文件失败: {}", e))?;
@@ -1753,7 +1779,17 @@ impl TokenManager {
             None => return Err(format!("未找到账号: {}", email)),
         };
 
-        let project_id = project_id_opt.unwrap_or_else(|| "bamboo-precept-lgxtn".to_string());
+        let project_id = project_id_opt.unwrap_or_else(|| String::new());
+
+        // [PHASE 2] Detect OpenAI accounts - skip token refresh
+        let is_openai = current_access_token.starts_with("eyJ")
+            || current_access_token.starts_with("sk-")
+            || refresh_token.is_empty();
+
+        // OpenAI accounts: return immediately, no OAuth refresh needed
+        if is_openai {
+            return Ok((current_access_token, project_id, email.to_string(), account_id, 0));
+        }
 
         // 检查是否过期 (提前5分钟)
         if now < timestamp + expires_in - 300 {
