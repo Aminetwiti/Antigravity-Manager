@@ -1,10 +1,5 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { invoke } from "@tauri-apps/api/core";
-import { listen } from "@tauri-apps/api/event";
-import { openUrl } from "@tauri-apps/plugin-opener";
-
-
 import {
   Globe,
   Key,
@@ -17,6 +12,7 @@ import {
 } from "lucide-react";
 import { useAccountStore } from "../../stores/useAccountStore";
 import { useTranslation } from "react-i18next";
+import { isTauri } from "../../utils/env";
 
 interface AddOpenAIAccountDialogProps {
   isOpen: boolean;
@@ -120,20 +116,30 @@ export default function AddOpenAIAccountDialog({
   };
 
   const handleOAuthLogin = async () => {
+    if (!isTauri()) {
+      setStatus("error");
+      setMessage("OAuth login is only available in the desktop app.");
+      return;
+    }
+
     try {
       setStatus("loading");
       setMessage("Generating Auth URL...");
+
+      // Dynamic imports for Tauri-only APIs
+      const { invoke } = await import("@tauri-apps/api/core");
+      const { listen } = await import("@tauri-apps/api/event");
+      const { openUrl } = await import("@tauri-apps/plugin-opener");
 
       // Listen for success event
       const unlisten = await listen<any>("openai-oauth-success", (event) => {
         const { email: authEmail, access_token, refresh_token } = event.payload;
         setEmail(authEmail);
         setAccessToken(access_token);
-        setSessionToken(refresh_token); // Hack: Saving refresh token in session token field for now
+        setSessionToken(refresh_token);
         setStatus("success");
         setMessage("Login successful! Credentials auto-filled.");
 
-        // Clear success message after delay but keep form filled
         setTimeout(() => {
           setStatus("idle");
           setMessage("");
