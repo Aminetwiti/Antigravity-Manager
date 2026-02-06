@@ -52,6 +52,11 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
+# Invalidate cache when source changes (force rebuild)
+# IMPORTANT: Must be BEFORE COPY to invalidate cache
+ARG CACHEBUST=1
+RUN echo "Cache bust: $CACHEBUST"
+
 # Copy the entire project
 COPY . .
 

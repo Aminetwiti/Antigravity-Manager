@@ -1,0 +1,35 @@
+{
+  "accounts": {
+    "add": {
+      "openai": {
+        "title": "Ajouter Compte OpenAI",
+        "tabs": {
+          "web": "ChatGPT Web",
+          "api": "API OpenAI"
+        },
+        "web": {
+          "label": "Session Web",
+          "desc": "Utiliser le Access Token extrait du navigateur pour accéder à ChatGPT Web.",
+          "email": "Email",
+          "email_placeholder": "exemple@openai.com",
+          "access_token": "Access Token",
+          "access_token_placeholder": "Collez votre access token ici (commence par eyJ...)",
+          "session_token": "Session Token",
+          "session_token_placeholder": "Collez __Secure-next-auth.session-token (Optionnel mais recommandé)",
+          "btn_validate": "Valider Session"
+        },
+        "api": {
+          "label": "Clé API",
+          "desc": "Utilisation standard de l'API OpenAI (Payant).",
+          "email": "Email (Libellé)",
+          "email_placeholder": "Libellé pour ce compte",
+          "api_key": "Clé API",
+          "api_key_placeholder": "sk-proj-..."
+        },
+        "error_email": "Veuillez entrer un email/libellé",
+        "error_token": "Veuillez entrer un Access Token",
+        "error_api_key": "Veuillez entrer une Clé API"
+      }
+    }
+  }
+}
