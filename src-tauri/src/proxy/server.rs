@@ -2159,8 +2159,8 @@ async fn admin_toggle_auto_launch(Json(_payload): Json<serde_json::Value>) -> im
     StatusCode::NOT_IMPLEMENTED
 }
 
-async fn admin_get_http_api_settings() -> impl IntoResponse {
-    Json(serde_json::json!({ "enabled": true, "port": 8045 }))
+async fn admin_get_http_api_settings(State(state): State<AppState>) -> impl IntoResponse {
+    Json(serde_json::json!({ "enabled": true, "port": state.port }))
 }
 
 // [整合清理] 冗餘導入已移除

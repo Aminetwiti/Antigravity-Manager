@@ -454,7 +454,7 @@ impl Default for ProxyConfig {
             enabled: false,
             allow_lan_access: false, // 默认仅本机访问，隐私优先
             auth_mode: ProxyAuthMode::default(),
-            port: 8045,
+            port: 8046,
             api_key: format!("sk-{}", uuid::Uuid::new_v4().simple()),
             admin_password: None,
             auto_start: false,
