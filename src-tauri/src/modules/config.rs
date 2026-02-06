@@ -67,10 +67,56 @@ pub fn load_app_config() -> Result<AppConfig, String> {
         }
     }
 
-    let config: AppConfig = serde_json::from_value(v)
+    let mut modified = false;
+    let mut config: AppConfig = serde_json::from_value(v)
         .map_err(|e| format!("failed_to_convert_config_after_migration: {}", e))?;
+
+    // Environment variable overrides (highest priority)
     
-    // If migration occurred, auto-save once to clean up the file
+    // API Key
+    if let Ok(key) = std::env::var("ABV_API_KEY").or_else(|_| std::env::var("API_KEY")) {
+        if !key.trim().is_empty() && config.proxy.api_key != key {
+            config.proxy.api_key = key;
+            modified = true;
+        }
+    }
+
+    // Port
+    if let Ok(port_str) = std::env::var("ABV_PORT").or_else(|_| std::env::var("PORT")) {
+        if let Ok(port) = port_str.parse::<u16>() {
+            if config.proxy.port != port {
+                config.proxy.port = port;
+                modified = true;
+            }
+        }
+    }
+
+    // Web UI Password
+    if let Ok(pwd) = std::env::var("ABV_WEB_PASSWORD").or_else(|_| std::env::var("WEB_PASSWORD")) {
+        if !pwd.trim().is_empty() && config.proxy.admin_password != Some(pwd.clone()) {
+            config.proxy.admin_password = Some(pwd);
+            modified = true;
+        }
+    }
+
+    // Auth Mode
+    if let Ok(mode_str) = std::env::var("ABV_AUTH_MODE").or_else(|_| std::env::var("AUTH_MODE")) {
+        let mode = match mode_str.to_lowercase().as_str() {
+            "off" => Some(crate::proxy::ProxyAuthMode::Off),
+            "strict" => Some(crate::proxy::ProxyAuthMode::Strict),
+            "all_except_health" => Some(crate::proxy::ProxyAuthMode::AllExceptHealth),
+            "auto" => Some(crate::proxy::ProxyAuthMode::Auto),
+            _ => None,
+        };
+        if let Some(m) = mode {
+            if config.proxy.auth_mode != m {
+                config.proxy.auth_mode = m;
+                modified = true;
+            }
+        }
+    }
+
+    // If migration or env overrides occurred, auto-save once to clean up/persist
     if modified {
         let _ = save_app_config(&config);
     }

@@ -101,77 +101,8 @@ pub fn run() {
             // Load config
             match modules::config::load_app_config() {
                 Ok(mut config) => {
-                    let mut modified = false;
-                    // Force LAN access in headless/docker mode so it binds to 0.0.0.0
-                    config.proxy.allow_lan_access = true;
-
-                    // [NEW] 支持通过环境变量注入 API Key
-                    // 优先级：ABV_API_KEY > API_KEY > 配置文件
-                    let env_key = std::env::var("ABV_API_KEY")
-                        .or_else(|_| std::env::var("API_KEY"))
-                        .ok();
-
-                    if let Some(key) = env_key {
-                        if !key.trim().is_empty() {
-                            info!("Using API Key from environment variable");
-                            config.proxy.api_key = key;
-                            modified = true;
-                        }
-                    }
-
-                    // [NEW] 支持通过环境变量注入 Web UI 密码
-                    // 优先级：ABV_WEB_PASSWORD > WEB_PASSWORD > 配置文件
-                    let env_web_password = std::env::var("ABV_WEB_PASSWORD")
-                        .or_else(|_| std::env::var("WEB_PASSWORD"))
-                        .ok();
-
-                    if let Some(pwd) = env_web_password {
-                        if !pwd.trim().is_empty() {
-                            info!("Using Web UI Password from environment variable");
-                            config.proxy.admin_password = Some(pwd);
-                            modified = true;
-                        }
-                    }
-
-                    // [NEW] 支持通过环境变量注入鉴权模式
-                    // 优先级：ABV_AUTH_MODE > AUTH_MODE > 配置文件
-                    let env_auth_mode = std::env::var("ABV_AUTH_MODE")
-                        .or_else(|_| std::env::var("AUTH_MODE"))
-                        .ok();
-
-                    if let Some(mode_str) = env_auth_mode {
-                        let mode = match mode_str.to_lowercase().as_str() {
-                            "off" => Some(crate::proxy::ProxyAuthMode::Off),
-                            "strict" => Some(crate::proxy::ProxyAuthMode::Strict),
-                            "all_except_health" => Some(crate::proxy::ProxyAuthMode::AllExceptHealth),
-                            "auto" => Some(crate::proxy::ProxyAuthMode::Auto),
-                            _ => {
-                                warn!("Invalid AUTH_MODE: {}, ignoring", mode_str);
-                                None
-                            }
-                        };
-                        if let Some(m) = mode {
-                            info!("Using Auth Mode from environment variable: {:?}", m);
-                            config.proxy.auth_mode = m;
-                            modified = true;
-                        }
-                    }
-
-                    // [NEW] 支持通过环境变量注入 端口
-                    // 优先级：ABV_PORT > PORT > 配置文件
-                    let env_port = std::env::var("ABV_PORT")
-                        .or_else(|_| std::env::var("PORT"))
-                        .ok();
-
-                    if let Some(port_str) = env_port {
-                        if let Ok(port) = port_str.parse::<u16>() {
-                            info!("Using Port from environment variable: {}", port);
-                            config.proxy.port = port;
-                            modified = true;
-                        } else {
-                            warn!("Invalid PORT: {}, ignoring", port_str);
-                        }
-                    }
+                    // [FIX #1460] Persist environment overrides to ensure they are visible in Web UI/load_config
+                    // Now handled inside load_app_config
 
                     info!("--------------------------------------------------");
                     info!("🚀 Headless mode proxy service starting...");
@@ -185,15 +116,6 @@ pub fn run() {
                     info!("💡 Tips: You can use these keys to login to Web UI and access AI APIs.");
                     info!("💡 Search docker logs or grep gui_config.json to find them.");
                     info!("--------------------------------------------------");
-
-                    // [FIX #1460] Persist environment overrides to ensure they are visible in Web UI/load_config
-                    if modified {
-                        if let Err(e) = modules::config::save_app_config(&config) {
-                            error!("Failed to persist environment overrides: {}", e);
-                        } else {
-                            info!("Environment overrides persisted to gui_config.json");
-                        }
-                    }
 
                     // Start proxy service
                     if let Err(e) = commands::proxy::internal_start_proxy_service(
@@ -278,10 +200,10 @@ pub fn run() {
             modules::tray::create_tray(app.handle())?;
             info!("Tray created");
 
-            // 立即启动管理服务器 (8045)，以便 Web 端能访问
+            // 立即启动管理服务器，以便 Web 端能访问
             let handle = app.handle().clone();
             tauri::async_runtime::spawn(async move {
-                // Load config
+                // Load config (now includes environment overrides)
                 if let Ok(config) = modules::config::load_app_config() {
                     let state = handle.state::<commands::proxy::ProxyServiceState>();
                     let cf_state = handle.state::<commands::cloudflared::CloudflaredState>();

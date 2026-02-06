@@ -22,27 +22,30 @@ error() {
 
 log "Starting deployment of Antigravity Manager..."
 
-# 1. Check and Clean Port 8046
+# 1. Check and Clean Ports
+log "Checking for port conflicts..."
+
+for PORT_TO_CLEAN in 8045 8046; do
+    log "Checking port $PORT_TO_CLEAN..."
+    if command -v lsof >/dev/null 2>&1; then
+        PID=$(lsof -t -i:$PORT_TO_CLEAN)
+    elif command -v netstat >/dev/null 2>&1; then
+        PID=$(netstat -nlp | grep :$PORT_TO_CLEAN | awk '{print $7}' | cut -d'/' -f1)
+    elif command -v ss >/dev/null 2>&1; then
+        PID=$(ss -lptn 'sport = :'$PORT_TO_CLEAN | grep pid= | sed 's/.*pid=\([0-9]*\).*/\1/')
+    fi
+
+    if [ ! -z "$PID" ]; then
+        warn "Port $PORT_TO_CLEAN is used by process PID: $PID. Killing process..."
+        kill -9 $PID
+        sleep 2
+        log "Process $PID killed."
+    else
+        log "Port $PORT_TO_CLEAN is free."
+    fi
+done
+
 PORT=8046
-log "Checking port $PORT..."
-
-# Try to find the PID using the port
-if command -v lsof >/dev/null 2>&1; then
-    PID=$(lsof -t -i:$PORT)
-elif command -v netstat >/dev/null 2>&1; then
-    PID=$(netstat -nlp | grep :$PORT | awk '{print $7}' | cut -d'/' -f1)
-elif command -v ss >/dev/null 2>&1; then
-    PID=$(ss -lptn 'sport = :'$PORT | grep pid= | sed 's/.*pid=\([0-9]*\).*/\1/')
-fi
-
-if [ ! -z "$PID" ]; then
-    warn "Port $PORT is used by process PID: $PID. Killing process..."
-    kill -9 $PID
-    sleep 2
-    log "Process $PID killed."
-else
-    log "Port $PORT is free."
-fi
 
 # 2. Stop and Remove Existing Container
 CONTAINER_NAME="antigravity-manager"

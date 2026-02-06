@@ -5,10 +5,10 @@ WORKDIR /app
 
 # Use npm mirror if needed
 RUN if [ "$USE_MIRROR" = "true" ] || ( [ "$USE_MIRROR" = "auto" ] && ! timeout 3 bash -c "</dev/tcp/www.google.com/80" 2>/dev/null ); then \
-        echo "Using npm mirror..."; \
-        npm config set registry https://registry.npmmirror.com; \
+    echo "Using npm mirror..."; \
+    npm config set registry https://registry.npmmirror.com; \
     else \
-        echo "Using default npm registry..."; \
+    echo "Using default npm registry..."; \
     fi
 
 COPY package*.json ./
@@ -22,11 +22,11 @@ ARG USE_MIRROR=auto
 
 # Conditionally use Aliyun mirror for APT
 RUN if [ "$USE_MIRROR" = "true" ] || ( [ "$USE_MIRROR" = "auto" ] && ! timeout 3 bash -c "</dev/tcp/www.google.com/80" 2>/dev/null ); then \
-        echo "Using Aliyun mirror for APT..."; \
-        sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources || \
-        sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list; \
+    echo "Using Aliyun mirror for APT..."; \
+    sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources || \
+    sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list; \
     else \
-        echo "Using default APT sources..."; \
+    echo "Using default APT sources..."; \
     fi
 
 # Install build dependencies
@@ -43,11 +43,11 @@ RUN apt-get update && apt-get install -y \
 # Use Aliyun mirror for Cargo if needed (Sparse Index)
 ENV CARGO_HTTP_MULTIPLEXING=false
 RUN if [ "$USE_MIRROR" = "true" ] || ( [ "$USE_MIRROR" = "auto" ] && ! timeout 3 bash -c "</dev/tcp/www.google.com/80" 2>/dev/null ); then \
-        echo "Using Aliyun mirror for Cargo..."; \
-        mkdir -p /root/.cargo && \
-        echo "[source.crates-io]\nreplace-with = 'aliyun'\n\n[source.aliyun]\nregistry = \"sparse+https://mirrors.aliyun.com/crates.io-index/\"" > /root/.cargo/config.toml; \
+    echo "Using Aliyun mirror for Cargo..."; \
+    mkdir -p /root/.cargo && \
+    echo "[source.crates-io]\nreplace-with = 'aliyun'\n\n[source.aliyun]\nregistry = \"sparse+https://mirrors.aliyun.com/crates.io-index/\"" > /root/.cargo/config.toml; \
     else \
-        echo "Using default Cargo registry..."; \
+    echo "Using default Cargo registry..."; \
     fi
 
 WORKDIR /app
@@ -65,11 +65,11 @@ WORKDIR /app
 
 # Conditionally use Aliyun mirror for APT
 RUN if [ "$USE_MIRROR" = "true" ] || ( [ "$USE_MIRROR" = "auto" ] && ! timeout 3 bash -c "</dev/tcp/www.google.com/80" 2>/dev/null ); then \
-        echo "Using Aliyun mirror for APT..."; \
-        sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources || \
-        sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list; \
+    echo "Using Aliyun mirror for APT..."; \
+    sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources || \
+    sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list; \
     else \
-        echo "Using default APT sources..."; \
+    echo "Using default APT sources..."; \
     fi
 
 # Install runtime dependencies
@@ -92,10 +92,10 @@ COPY --from=frontend-builder /app/dist /app/dist
 # Set environment variables
 ENV ABV_DIST_PATH=/app/dist
 ENV RUST_LOG=info
-ENV PORT=8045
+ENV PORT=8046
 
 # Expose the proxy/admin port
-EXPOSE 8045
+EXPOSE 8046
 
 # Run the application in headless mode
 ENTRYPOINT ["/app/antigravity-tools", "--headless"]
