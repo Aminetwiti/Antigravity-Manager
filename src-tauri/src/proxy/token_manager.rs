@@ -426,28 +426,71 @@ impl TokenManager {
             .ok_or("缺少 email 字段")?
             .to_string();
 
-        let token_obj = account["token"].as_object()
-            .ok_or("缺少 token 字段")?;
-
-        let access_token = token_obj["access_token"].as_str()
-            .ok_or("缺少 access_token")?
-            .to_string();
-
-        let refresh_token = token_obj["refresh_token"].as_str()
-            .ok_or("缺少 refresh_token")?
-            .to_string();
-
-        let expires_in = token_obj["expires_in"].as_i64()
-            .ok_or("缺少 expires_in")?;
-
-        let timestamp = token_obj["expiry_timestamp"].as_i64()
-            .ok_or("缺少 expiry_timestamp")?;
-
-        // project_id 是可选的
-        let project_id = token_obj
-            .get("project_id")
+        // [PHASE 2] Detect provider type and extract credentials accordingly
+        let provider = account.get("provider")
             .and_then(|v| v.as_str())
-            .map(|s| s.to_string());
+            .unwrap_or("google");
+
+        let (access_token, refresh_token, expires_in, timestamp, project_id) = match provider {
+            "openai_web" => {
+                // OpenAI Web: credentials.access_token, no refresh_token / project_id
+                let creds = account.get("credentials")
+                    .ok_or("OpenAI Web account missing credentials field")?;
+                let at = creds.get("access_token")
+                    .and_then(|v| v.as_str())
+                    .ok_or("OpenAI Web account missing credentials.access_token")?
+                    .to_string();
+                let expires_at = creds.get("expires_at")
+                    .and_then(|v| v.as_i64())
+                    .unwrap_or(i64::MAX);
+                // Use session_token as a pseudo refresh_token for storage compatibility
+                let st = creds.get("session_token")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_string();
+                tracing::info!("Loaded OpenAI Web account: {} ({})", email, account_id);
+                (at, st, 0i64, expires_at, None)
+            }
+            "openai_api" => {
+                // OpenAI API: credentials.api_key used as access_token
+                let creds = account.get("credentials")
+                    .ok_or("OpenAI API account missing credentials field")?;
+                let api_key = creds.get("api_key")
+                    .and_then(|v| v.as_str())
+                    .ok_or("OpenAI API account missing credentials.api_key")?
+                    .to_string();
+                tracing::info!("Loaded OpenAI API account: {} ({})", email, account_id);
+                // API keys don't expire; use far-future timestamp
+                (api_key, String::new(), 0i64, i64::MAX, None)
+            }
+            _ => {
+                // Google / legacy format: token.access_token, token.refresh_token, etc.
+                let token_obj = account["token"].as_object()
+                    .or_else(|| {
+                        // Also try credentials.token for Phase 1 migrated Google accounts
+                        account.get("credentials")
+                            .and_then(|c| c.get("token"))
+                            .and_then(|t| t.as_object())
+                    })
+                    .ok_or("缺少 token 字段")?;
+
+                let at = token_obj["access_token"].as_str()
+                    .ok_or("缺少 access_token")?
+                    .to_string();
+                let rt = token_obj["refresh_token"].as_str()
+                    .ok_or("缺少 refresh_token")?
+                    .to_string();
+                let ei = token_obj["expires_in"].as_i64()
+                    .ok_or("缺少 expires_in")?;
+                let ts = token_obj["expiry_timestamp"].as_i64()
+                    .ok_or("缺少 expiry_timestamp")?;
+                let pid = token_obj
+                    .get("project_id")
+                    .and_then(|v| v.as_str())
+                    .map(|s| s.to_string());
+                (at, rt, ei, ts, pid)
+            }
+        };
 
         // 【新增】提取订阅等级 (subscription_tier 为 "FREE" | "PRO" | "ULTRA")
         let subscription_tier = account
@@ -1127,36 +1170,46 @@ impl TokenManager {
                     // 直接使用优先账号，跳过轮询逻辑
                     let mut token = preferred_token.clone();
 
-                    // 检查 token 是否过期（提前5分钟刷新）
-                    let now = chrono::Utc::now().timestamp();
-                    if now >= token.timestamp - 300 {
-                        tracing::debug!("账号 {} 的 token 即将过期，正在刷新...", token.email);
-                        match crate::modules::oauth::refresh_access_token(&token.refresh_token, Some(&token.account_id))
-                            .await
-                        {
-                            Ok(token_response) => {
-                                token.access_token = token_response.access_token.clone();
-                                token.expires_in = token_response.expires_in;
-                                token.timestamp = now + token_response.expires_in;
+                    // [PHASE 2] Detect OpenAI accounts
+                    let is_openai_pref = token.access_token.starts_with("eyJ")
+                        || token.access_token.starts_with("sk-")
+                        || token.refresh_token.is_empty();
 
-                                if let Some(mut entry) = self.tokens.get_mut(&token.account_id) {
-                                    entry.access_token = token.access_token.clone();
-                                    entry.expires_in = token.expires_in;
-                                    entry.timestamp = token.timestamp;
+                    // 检查 token 是否过期（提前5分钟刷新）- Only for Google accounts
+                    if !is_openai_pref {
+                        let now = chrono::Utc::now().timestamp();
+                        if now >= token.timestamp - 300 {
+                            tracing::debug!("账号 {} 的 token 即将过期，正在刷新...", token.email);
+                            match crate::modules::oauth::refresh_access_token(&token.refresh_token, Some(&token.account_id))
+                                .await
+                            {
+                                Ok(token_response) => {
+                                    token.access_token = token_response.access_token.clone();
+                                    token.expires_in = token_response.expires_in;
+                                    token.timestamp = now + token_response.expires_in;
+
+                                    if let Some(mut entry) = self.tokens.get_mut(&token.account_id) {
+                                        entry.access_token = token.access_token.clone();
+                                        entry.expires_in = token.expires_in;
+                                        entry.timestamp = token.timestamp;
+                                    }
+                                    let _ = self
+                                        .save_refreshed_token(&token.account_id, &token_response)
+                                        .await;
                                 }
-                                let _ = self
-                                    .save_refreshed_token(&token.account_id, &token_response)
-                                    .await;
-                            }
-                            Err(e) => {
-                                tracing::warn!("Preferred account token refresh failed: {}", e);
-                                // 继续使用旧 token，让后续逻辑处理失败
+                                Err(e) => {
+                                    tracing::warn!("Preferred account token refresh failed: {}", e);
+                                    // 继续使用旧 token，让后续逻辑处理失败
+                                }
                             }
                         }
                     }
 
                     // 确保有 project_id
-                    let project_id = if let Some(pid) = &token.project_id {
+                    let project_id = if is_openai_pref {
+                        // OpenAI accounts don't need a Google project_id
+                        String::new()
+                    } else if let Some(pid) = &token.project_id {
                         pid.clone()
                     } else {
                         match crate::proxy::project_resolver::fetch_project_id(&token.access_token)
@@ -1455,71 +1508,82 @@ impl TokenManager {
                 OnDiskAccountState::Enabled => {}
             }
 
-            // 3. 检查 token 是否过期（提前5分钟刷新）
-            let now = chrono::Utc::now().timestamp();
-            if now >= token.timestamp - 300 {
-                tracing::debug!("账号 {} 的 token 即将过期，正在刷新...", token.email);
+            // [PHASE 2] Determine if this is an OpenAI account (skip Google OAuth refresh & project_id)
+            let is_openai_account = token.access_token.starts_with("eyJ")  // OpenAI Web JWT
+                || token.access_token.starts_with("sk-")                   // OpenAI API key
+                || token.refresh_token.is_empty();                          // No refresh token
 
-                // 调用 OAuth 刷新 token
-                match crate::modules::oauth::refresh_access_token(&token.refresh_token, Some(&token.account_id)).await {
-                    Ok(token_response) => {
-                        tracing::debug!("Token 刷新成功！");
+            // 3. 检查 token 是否过期（提前5分钟刷新）- Only for Google accounts
+            if !is_openai_account {
+                let now = chrono::Utc::now().timestamp();
+                if now >= token.timestamp - 300 {
+                    tracing::debug!("账号 {} 的 token 即将过期，正在刷新...", token.email);
 
-                        // 更新本地内存对象供后续使用
-                        token.access_token = token_response.access_token.clone();
-                        token.expires_in = token_response.expires_in;
-                        token.timestamp = now + token_response.expires_in;
+                    // 调用 OAuth 刷新 token
+                    match crate::modules::oauth::refresh_access_token(&token.refresh_token, Some(&token.account_id)).await {
+                        Ok(token_response) => {
+                            tracing::debug!("Token 刷新成功！");
 
-                        // 同步更新跨线程共享的 DashMap
-                        if let Some(mut entry) = self.tokens.get_mut(&token.account_id) {
-                            entry.access_token = token.access_token.clone();
-                            entry.expires_in = token.expires_in;
-                            entry.timestamp = token.timestamp;
-                        }
+                            // 更新本地内存对象供后续使用
+                            token.access_token = token_response.access_token.clone();
+                            token.expires_in = token_response.expires_in;
+                            token.timestamp = now + token_response.expires_in;
 
-                        // 同步落盘（避免重启后继续使用过期 timestamp 导致频繁刷新）
-                        if let Err(e) = self
-                            .save_refreshed_token(&token.account_id, &token_response)
-                            .await
-                        {
-                            tracing::debug!("保存刷新后的 token 失败 ({}): {}", token.email, e);
-                        }
-                    }
-                    Err(e) => {
-                        tracing::error!("Token 刷新失败 ({}): {}，尝试下一个账号", token.email, e);
-                        if e.contains("\"invalid_grant\"") || e.contains("invalid_grant") {
-                            tracing::error!(
-                                "Disabling account due to invalid_grant ({}): refresh_token likely revoked/expired",
-                                token.email
-                            );
-                            let _ = self
-                                .disable_account(
-                                    &token.account_id,
-                                    &format!("invalid_grant: {}", e),
-                                )
-                                .await;
-                            self.tokens.remove(&token.account_id);
-                        }
-                        // Avoid leaking account emails to API clients; details are still in logs.
-                        last_error = Some(format!("Token refresh failed: {}", e));
-                        attempted.insert(token.account_id.clone());
+                            // 同步更新跨线程共享的 DashMap
+                            if let Some(mut entry) = self.tokens.get_mut(&token.account_id) {
+                                entry.access_token = token.access_token.clone();
+                                entry.expires_in = token.expires_in;
+                                entry.timestamp = token.timestamp;
+                            }
 
-                        // 【优化】标记需要清除锁定，避免在循环内加锁
-                        if quota_group != "image_gen" {
-                            if matches!(&last_used_account_id, Some((id, _)) if id == &token.account_id)
+                            // 同步落盘（避免重启后继续使用过期 timestamp 导致频繁刷新）
+                            if let Err(e) = self
+                                .save_refreshed_token(&token.account_id, &token_response)
+                                .await
                             {
-                                need_update_last_used =
-                                    Some((String::new(), std::time::Instant::now()));
-                                // 空字符串表示需要清除
+                                tracing::debug!("保存刷新后的 token 失败 ({}): {}", token.email, e);
                             }
                         }
-                        continue;
+                        Err(e) => {
+                            tracing::error!("Token 刷新失败 ({}): {}，尝试下一个账号", token.email, e);
+                            if e.contains("\"invalid_grant\"") || e.contains("invalid_grant") {
+                                tracing::error!(
+                                    "Disabling account due to invalid_grant ({}): refresh_token likely revoked/expired",
+                                    token.email
+                                );
+                                let _ = self
+                                    .disable_account(
+                                        &token.account_id,
+                                        &format!("invalid_grant: {}", e),
+                                    )
+                                    .await;
+                                self.tokens.remove(&token.account_id);
+                            }
+                            // Avoid leaking account emails to API clients; details are still in logs.
+                            last_error = Some(format!("Token refresh failed: {}", e));
+                            attempted.insert(token.account_id.clone());
+
+                            // 【优化】标记需要清除锁定，避免在循环内加锁
+                            if quota_group != "image_gen" {
+                                if matches!(&last_used_account_id, Some((id, _)) if id == &token.account_id)
+                                {
+                                    need_update_last_used =
+                                        Some((String::new(), std::time::Instant::now()));
+                                    // 空字符串表示需要清除
+                                }
+                            }
+                            continue;
+                        }
                     }
                 }
             }
 
-            // 4. 确保有 project_id
-            let project_id = if let Some(pid) = &token.project_id {
+            // 4. 确保有 project_id (only needed for Google/Gemini accounts)
+            let project_id = if is_openai_account {
+                // [PHASE 2] OpenAI accounts don't need a Google project_id
+                // Return empty string - the handler will use the access_token/API key directly
+                String::new()
+            } else if let Some(pid) = &token.project_id {
                 pid.clone()
             } else {
                 tracing::debug!("账号 {} 缺少 project_id，尝试获取...", token.email);

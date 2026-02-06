@@ -189,6 +189,81 @@ pub async fn handle_chat_completions(
         last_email = Some(email.clone());
         info!("✓ Using account: {} (type: {})", email, config.request_type);
 
+        // [PHASE 2] OpenAI API Key Routing (sk-...)
+        if access_token.starts_with("sk-") {
+            debug!("[{}] Routing to OpenAI API (direct proxy)", trace_id);
+
+            let openai_client = reqwest::Client::builder()
+                .timeout(std::time::Duration::from_secs(300))
+                .build()
+                .unwrap_or_default();
+
+            // Forward the original request body directly to OpenAI
+            let mut openai_body = serde_json::to_value(&openai_req)
+                .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("Serialize error: {}", e)))?;
+
+            // Ensure stream field is set
+            openai_body["stream"] = serde_json::Value::Bool(openai_req.stream);
+
+            let openai_resp = openai_client
+                .post("https://api.openai.com/v1/chat/completions")
+                .header("Authorization", format!("Bearer {}", access_token))
+                .header("Content-Type", "application/json")
+                .json(&openai_body)
+                .send()
+                .await;
+
+            match openai_resp {
+                Ok(resp) => {
+                    let status = resp.status();
+                    if status.is_success() {
+                        if openai_req.stream {
+                            // Stream response passthrough
+                            let stream = resp.bytes_stream();
+                            use futures::StreamExt;
+                            let body = axum::body::Body::from_stream(stream.map(|chunk| {
+                                chunk.map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))
+                            }));
+                            return Ok(Response::builder()
+                                .status(StatusCode::OK)
+                                .header("Content-Type", "text/event-stream")
+                                .header("Cache-Control", "no-cache")
+                                .header("X-Account-Email", email.as_str())
+                                .header("X-Mapped-Model", mapped_model.as_str())
+                                .body(body)
+                                .unwrap()
+                                .into_response());
+                        } else {
+                            // Non-stream: forward JSON response
+                            let resp_json: Value = resp.json().await.unwrap_or(json!({"error": "Failed to parse OpenAI response"}));
+                            return Ok((
+                                StatusCode::OK,
+                                [
+                                    ("X-Account-Email", email.as_str()),
+                                    ("X-Mapped-Model", mapped_model.as_str()),
+                                ],
+                                Json(resp_json),
+                            ).into_response());
+                        }
+                    } else {
+                        let error_text = resp.text().await.unwrap_or_default();
+                        tracing::error!("[OpenAI API] HTTP {} - {}", status, error_text);
+                        if status.as_u16() == 429 {
+                            last_error = format!("OpenAI API rate limited: {}", error_text);
+                            continue; // Try next account
+                        }
+                        last_error = format!("OpenAI API error: HTTP {} - {}", status, error_text);
+                        continue;
+                    }
+                }
+                Err(e) => {
+                    tracing::error!("[OpenAI API] Request failed: {}", e);
+                    last_error = format!("OpenAI API request failed: {}", e);
+                    continue;
+                }
+            }
+        }
+
         // [NEW] ChatGPT Web Routing
         if access_token.starts_with("eyJ") {
             debug!("[{}] Routing to ChatGPT Web Client", trace_id);
