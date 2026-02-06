@@ -1,378 +1,769 @@
-
-#22 257.0    Compiling rusqlite v0.32.1
-#22 261.0 error[E0433]: failed to resolve: could not find `__cmd__add_openai_web_account` in `commands`
-#22 261.0    --> src/lib.rs:410:23
-#22 261.0     |
-#22 261.0 410 |             commands::add_openai_web_account,
-#22 261.0     |                       ^^^^^^^^^^^^^^^^^^^^^^ could not find `__cmd__add_openai_web_account` in `commands`
-#22 261.0
-#22 261.0 error[E0433]: failed to resolve: could not find `__cmd__add_openai_api_account` in `commands`
-#22 261.0    --> src/lib.rs:411:23
-#22 261.0     |
-#22 261.0 411 |             commands::add_openai_api_account,
-#22 261.0     |                       ^^^^^^^^^^^^^^^^^^^^^^ could not find `__cmd__add_openai_api_account` in `commands`
-#22 261.0
-#22 261.0 error[E0433]: failed to resolve: could not find `__cmd__validate_openai_session` in `commands`
-#22 261.0    --> src/lib.rs:412:23
-#22 261.0     |
-#22 261.0 412 |             commands::validate_openai_session,
-#22 261.0     |                       ^^^^^^^^^^^^^^^^^^^^^^^ could not find `__cmd__validate_openai_session` in `commands`
-#22 261.0
-#22 261.0 error[E0433]: failed to resolve: could not find `__cmd__start_openai_oauth_flow` in `commands`
-#22 261.0    --> src/lib.rs:413:23
-#22 261.0     |
-#22 261.0 413 |             commands::start_openai_oauth_flow,
-#22 261.0     |                       ^^^^^^^^^^^^^^^^^^^^^^^ could not find `__cmd__start_openai_oauth_flow` in `commands`
-#22 261.0
-#22 261.4 warning: unused import: `engine::general_purpose`
-#22 261.4  --> src/modules/db.rs:2:14
-#22 261.4   |
-#22 261.4 2 | use base64::{engine::general_purpose, Engine as _};
-#22 261.4   |              ^^^^^^^^^^^^^^^^^^^^^^^
-#22 261.4   |
-#22 261.4   = note: `#[warn(unused_imports)]` on by default
-#22 261.4
-#22 261.4 warning: unused import: `tauri::State`
-#22 261.4  --> src/commands/user_token.rs:1:5
-#22 261.4   |
-#22 261.4 1 | use tauri::State;
-#22 261.4   |     ^^^^^^^^^^^^
-#22 261.4
-#22 261.4 warning: unused imports: `add_openai_api_account`, `add_openai_web_account`, `start_openai_oauth_flow`, and `validate_openai_session`
-#22 261.4   --> src/commands/mod.rs:22:27
-#22 261.4    |
-#22 261.4 22 | pub use openai_accounts::{add_openai_web_account, add_openai_api_account, validate_openai_session, start_openai_oauth_flow};
-#22 261.4    |                           ^^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^^
-#22 261.4
-#22 261.4 warning: unused imports: `AccountExportItem` and `AccountExportResponse`
-#22 261.4    --> src/proxy/server.rs:176:21
-#22 261.4     |
-#22 261.4 176 | use crate::models::{AccountExportItem, AccountExportResponse};
-#22 261.4     |                     ^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^
-#22 261.4
-#22 261.5 warning: unused import: `chatgpt::*`
-#22 261.5  --> src/proxy/clients/mod.rs:3:9
-#22 261.5   |
-#22 261.5 3 | pub use chatgpt::*;
-#22 261.5   |         ^^^^^^^^^^
-#22 261.5
-#22 261.5 warning: unused import: `uuid::Uuid`
-#22 261.5   --> src/proxy/handlers/openai.rs:27:5
-#22 261.5    |
-#22 261.5 27 | use uuid::Uuid;
-#22 261.5    |     ^^^^^^^^^^
-#22 261.5
-#22 261.5 warning: unused import: `RetryStrategy`
-#22 261.5  --> src/proxy/handlers/gemini.rs:9:109
-#22 261.5   |
-#22 261.5 9 | use crate::proxy::handlers::common::{determine_retry_strategy, apply_retry_strategy, should_rotate_account, RetryStrategy};
-#22 261.5   |                                                                                                             ^^^^^^^^^^^^^
-#22 261.5
-#22 261.5 warning: unused import: `tokio::time::Duration`
-#22 261.5   --> src/proxy/handlers/gemini.rs:11:5
-#22 261.5    |
-#22 261.5 11 | use tokio::time::Duration;
-#22 261.5    |     ^^^^^^^^^^^^^^^^^^^^^
-#22 261.5
-#22 261.5 warning: unused import: `json`
-#22 261.5  --> src/proxy/mappers/openai/collector.rs:7:18
-#22 261.5   |
-#22 261.5 7 | use serde_json::{json, Value};
-#22 261.5   |                  ^^^^
-#22 261.5
-#22 261.5 warning: unused import: `std::io`
-#22 261.5  --> src/proxy/mappers/openai/collector.rs:9:5
-#22 261.5   |
-#22 261.5 9 | use std::io;
-#22 261.5   |     ^^^^^^^
-#22 261.5
-#22 261.5 warning: unused import: `body::Body`
-#22 261.5  --> src/proxy/middleware/ip_filter.rs:6:5
-#22 261.5   |
-#22 261.5 6 |     body::Body,
-#22 261.5   |     ^^^^^^^^^^
-#22 261.5
-#22 261.5 warning: unused import: `config::get_thinking_budget_config`
-#22 261.5   --> src/proxy/mod.rs:30:9
-#22 261.5    |
-#22 261.5 30 | pub use config::get_thinking_budget_config;
-#22 261.5    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-#22 261.5
-#22 261.5 warning: unused import: `config::ThinkingBudgetConfig`
-#22 261.5   --> src/proxy/mod.rs:35:9
-#22 261.5    |
-#22 261.5 35 | pub use config::ThinkingBudgetConfig;
-#22 261.5    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-#22 261.5
-#22 261.5 warning: unused import: `config::ThinkingBudgetMode`
-#22 261.5   --> src/proxy/mod.rs:36:9
-#22 261.5    |
-#22 261.5 36 | pub use config::ThinkingBudgetMode;
-#22 261.5    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^
-#22 261.5
-#22 261.5 warning: unused imports: `ProxyPoolManager`, `get_global_proxy_pool`, and `init_global_proxy_pool`
-#22 261.5   --> src/proxy/mod.rs:43:22
-#22 261.5    |
-#22 261.5 43 | pub use proxy_pool::{ProxyPoolManager, get_global_proxy_pool, init_global_proxy_pool};
-#22 261.5    |                      ^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^
-#22 261.5
-#22 261.5 warning: unused imports: `Account`, `ProviderCredentials`, and `Provider`
-#22 261.5  --> src/auth/openai_oauth.rs:1:30
-#22 261.5   |
-#22 261.5 1 | use crate::models::account::{Account, Provider, ProviderCredentials};
-#22 261.5   |                              ^^^^^^^  ^^^^^^^^  ^^^^^^^^^^^^^^^^^^^
-#22 261.5
-#22 261.5 warning: unused import: `crate::proxy::server::AppState`
-#22 261.5  --> src/auth/openai_oauth.rs:2:5
-#22 261.5   |
-#22 261.5 2 | use crate::proxy::server::AppState;
-#22 261.5   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-#22 261.5
-#22 261.5 warning: unused import: `Redirect`
-#22 261.5  --> src/auth/openai_oauth.rs:5:36
-#22 261.5   |
-#22 261.5 5 |     response::{Html, IntoResponse, Redirect},
-#22 261.5   |                                    ^^^^^^^^
-#22 261.5
-#22 261.5 warning: unused import: `openai_web::*`
-#22 261.5  --> src/auth/mod.rs:4:9
-#22 261.5   |
-#22 261.5 4 | pub use openai_web::*;
-#22 261.5   |         ^^^^^^^^^^^^^
-#22 261.5
-#22 261.5 warning: unused import: `warn`
-#22 261.5   --> src/lib.rs:12:21
-#22 261.5    |
-#22 261.5 12 | use tracing::{info, warn, error};
-#22 261.5    |                     ^^^^
-#22 261.5
-#22 262.5 warning: unused variable: `account_id`
-#22 262.5    --> src/modules/quota.rs:291:5
-#22 262.5     |
-#22 262.5 291 |     account_id: Option<&str>,
-#22 262.5     |     ^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_account_id`
-#22 262.5     |
-#22 262.5     = note: `#[warn(unused_variables)]` on by default
-#22 262.5
-#22 262.8 error[E0382]: borrow of partially moved value: `acc`
-#22 262.8    --> src/modules/http_api.rs:256:24
-#22 262.8     |
-#22 262.8 246 |               let quota = acc.quota.map(|q| QuotaResponse {
-#22 262.8     |  _________________________---------_-
-#22 262.8     | |                         |
-#22 262.8     | |                         help: consider calling `.as_ref()` or `.as_mut()` to borrow the type's contents
-#22 262.8 247 | |                 models: q.models.into_iter().map(|m| ModelQuota {
-#22 262.8 248 | |                     name: m.name,
-#22 262.8 249 | |                     percentage: m.percentage,
-#22 262.8 ...   |
-#22 262.8 253 | |                 subscription_tier: q.subscription_tier,
-#22 262.8 254 | |             });
-#22 262.8     | |______________- `acc.quota` partially moved due to this method call
-#22 262.8 255 |
-#22 262.8 256 |               let name = acc.name().cloned();
-#22 262.8     |                          ^^^ value borrowed here after partial move
-#22 262.8     |
-#22 262.8 note: `std::option::Option::<T>::map` takes ownership of the receiver `self`, which moves `acc.quota`
-#22 262.8    --> /rustc/4eb161250e340c8f48f66e2b929ef4a5bed7c181/library/core/src/option.rs:1114:22
-#22 262.8     = note: partial move occurs because `acc.quota` has type `std::option::Option<QuotaData>`, which does not implement the `Copy` trait
-#22 262.8 help: you can `clone` the value and consume it, but this might not be your desired behavior
-#22 262.8     |
-#22 262.8 246 |             let quota = acc.quota.clone().map(|q| QuotaResponse {
-#22 262.8     |                                  ++++++++
-#22 262.8
-#22 262.8 error[E0382]: borrow of partially moved value: `acc`
-#22 262.8    --> src/modules/http_api.rs:299:20
-#22 262.8     |
-#22 262.8 289 |           let quota = acc.quota.map(|q| QuotaResponse {
-#22 262.8     |  _____________________---------_-
-#22 262.8     | |                     |
-#22 262.8     | |                     help: consider calling `.as_ref()` or `.as_mut()` to borrow the type's contents
-#22 262.8 290 | |             models: q.models.into_iter().map(|m| ModelQuota {
-#22 262.8 291 | |                 name: m.name,
-#22 262.8 292 | |                 percentage: m.percentage,
-#22 262.8 ...   |
-#22 262.8 296 | |             subscription_tier: q.subscription_tier,
-#22 262.8 297 | |         });
-#22 262.8     | |__________- `acc.quota` partially moved due to this method call
-#22 262.8 298 |
-#22 262.8 299 |           let name = acc.name().cloned();
-#22 262.8     |                      ^^^ value borrowed here after partial move
-#22 262.8     |
-#22 262.8 note: `std::option::Option::<T>::map` takes ownership of the receiver `self`, which moves `acc.quota`
-#22 262.8    --> /rustc/4eb161250e340c8f48f66e2b929ef4a5bed7c181/library/core/src/option.rs:1114:22
-#22 262.8     = note: partial move occurs because `acc.quota` has type `std::option::Option<QuotaData>`, which does not implement the `Copy` trait
-#22 262.8 help: you can `clone` the value and consume it, but this might not be your desired behavior
-#22 262.8     |
-#22 262.8 289 |         let quota = acc.quota.clone().map(|q| QuotaResponse {
-#22 262.8     |                              ++++++++
-#22 262.8
-#22 264.2 warning: value assigned to `wait_ms` is never read
-#22 264.2     --> src/proxy/token_manager.rs:1422:29
-#22 264.2      |
-#22 264.2 1422 |                     let mut wait_ms = 0;
-#22 264.2      |                             ^^^^^^^
-#22 264.2      |
-#22 264.2      = help: maybe it is overwritten before being read?
-#22 264.2      = note: `#[warn(unused_assignments)]` on by default
-#22 264.2
-#22 264.8 warning: unused variable: `reference_images`
-#22 264.8     --> src/proxy/handlers/openai.rs:1861:13
-#22 264.8      |
-#22 264.8 1861 |     let mut reference_images: Vec<String> = Vec::new(); // Store base64 data of reference images
-#22 264.8      |             ^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_reference_images`
-#22 264.8
-#22 264.9 warning: variable does not need to be mutable
-#22 264.9     --> src/proxy/handlers/openai.rs:1861:9
-#22 264.9      |
-#22 264.9 1861 |     let mut reference_images: Vec<String> = Vec::new(); // Store base64 data of reference images
-#22 264.9      |         ----^^^^^^^^^^^^^^^^
-#22 264.9      |         |
-#22 264.9      |         help: remove this `mut`
-#22 264.9      |
-#22 264.9      = note: `#[warn(unused_mut)]` on by default
-#22 264.9
-#22 264.9 warning: variable does not need to be mutable
-#22 264.9     --> src/proxy/handlers/openai.rs:1988:10
-#22 264.9      |
-#22 264.9 1988 |     let (mut image_config, _) = crate::proxy::mappers::common_utils::parse_image_config_with_params(
-#22 264.9      |          ----^^^^^^^^^^^^
-#22 264.9      |          |
-#22 264.9      |          help: remove this `mut`
-#22 264.9
-#22 264.9 warning: variable does not need to be mutable
-#22 264.9     --> src/proxy/handlers/openai.rs:2038:9
-#22 264.9      |
-#22 264.9 2038 |     let mut gemini_body = json!({
-#22 264.9      |         ----^^^^^^^^^^^
-#22 264.9      |         |
-#22 264.9      |         help: remove this `mut`
-#22 264.9
-#22 265.8 warning: unused variable: `retry_after`
-#22 265.8    --> src/proxy/handlers/gemini.rs:376:13
-#22 265.8     |
-#22 265.8 376 |         let retry_after = response.headers().get("Retry-After").and_then(|h| h.to_str().ok()).map(|s| s.to_string());
-#22 265.8     |             ^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_retry_after`
-#22 265.8
-#22 266.3 error[E0382]: borrow of partially moved value: `acc`
-#22 266.3    --> src/proxy/server.rs:828:24
-#22 266.3     |
-#22 266.3 813 |               let quota = acc.quota.map(|q| QuotaResponse {
-#22 266.3     |  _________________________---------_-
-#22 266.3     | |                         |
-#22 266.3     | |                         help: consider calling `.as_ref()` or `.as_mut()` to borrow the type's contents
-#22 266.3 814 | |                 models: q
-#22 266.3 815 | |                     .models
-#22 266.3 816 | |                     .into_iter()
-#22 266.3 ...   |
-#22 266.3 825 | |                 is_forbidden: q.is_forbidden,
-#22 266.3 826 | |             });
-#22 266.3     | |______________- `acc.quota` partially moved due to this method call
-#22 266.3 827 |
-#22 266.3 828 |               let name = acc.name().cloned();
-#22 266.3     |                          ^^^ value borrowed here after partial move
-#22 266.3     |
-#22 266.3 note: `std::option::Option::<T>::map` takes ownership of the receiver `self`, which moves `acc.quota`
-#22 266.3    --> /rustc/4eb161250e340c8f48f66e2b929ef4a5bed7c181/library/core/src/option.rs:1114:22
-#22 266.3     = note: partial move occurs because `acc.quota` has type `std::option::Option<QuotaData>`, which does not implement the `Copy` trait
-#22 266.3 help: you can `clone` the value and consume it, but this might not be your desired behavior
-#22 266.3     |
-#22 266.3 813 |             let quota = acc.quota.clone().map(|q| QuotaResponse {
-#22 266.3     |                                  ++++++++
-#22 266.3
-#22 266.3 error[E0382]: borrow of partially moved value: `acc`
-#22 266.3    --> src/proxy/server.rs:909:24
-#22 266.3     |
-#22 266.3 894 |               let quota = acc.quota.map(|q| QuotaResponse {
-#22 266.3     |  _________________________---------_-
-#22 266.3     | |                         |
-#22 266.3     | |                         help: consider calling `.as_ref()` or `.as_mut()` to borrow the type's contents
-#22 266.3 895 | |                 models: q
-#22 266.3 896 | |                     .models
-#22 266.3 897 | |                     .into_iter()
-#22 266.3 ...   |
-#22 266.3 906 | |                 is_forbidden: q.is_forbidden,
-#22 266.3 907 | |             });
-#22 266.3     | |______________- `acc.quota` partially moved due to this method call
-#22 266.3 908 |
-#22 266.3 909 |               let name = acc.name().cloned();
-#22 266.3     |                          ^^^ value borrowed here after partial move
-#22 266.3     |
-#22 266.3 note: `std::option::Option::<T>::map` takes ownership of the receiver `self`, which moves `acc.quota`
-#22 266.3    --> /rustc/4eb161250e340c8f48f66e2b929ef4a5bed7c181/library/core/src/option.rs:1114:22
-#22 266.3     = note: partial move occurs because `acc.quota` has type `std::option::Option<QuotaData>`, which does not implement the `Copy` trait
-#22 266.3 help: you can `clone` the value and consume it, but this might not be your desired behavior
-#22 266.3     |
-#22 266.3 894 |             let quota = acc.quota.clone().map(|q| QuotaResponse {
-#22 266.3     |                                  ++++++++
-#22 266.3
-#22 266.8 warning: unused variable: `id`
-#22 266.8     --> src/proxy/server.rs:1525:10
-#22 266.8      |
-#22 266.8 1525 |     Path(id): Path<String>,
-#22 266.8      |          ^^ help: if this is intentional, prefix it with an underscore: `_id`
-#22 266.8
-#22 267.1 warning: unused variable: `state`
-#22 267.1     --> src/proxy/server.rs:3266:11
-#22 267.1      |
-#22 267.1 3266 |     State(state): State<AppState>,
-#22 267.1      |           ^^^^^ help: if this is intentional, prefix it with an underscore: `_state`
-#22 267.1
-#22 270.9 warning: unused import: `Engine`
-#22 270.9  --> src/modules/db.rs:2:39
-#22 270.9   |
-#22 270.9 2
-| use base64::{engine::general_purpose, Engine as _};
-#22 270.9   |                                       ^^^^^^
-#22 270.9
-#22 270.9 warning: unused import: `futures::TryFutureExt`
-#22 270.9   --> src/proxy/server.rs:11:5
-#22 270.9    |
-#22 270.9 11 | use futures::TryFutureExt;
-#22 270.9    |     ^^^^^^^^^^^^^^^^^^^^^
-#22 270.9
-#22 270.9 warning: unused import: `Manager`
-#22 270.9   --> src/auth/openai_oauth.rs:15:33
-#22 270.9    |
-#22 270.9 15 | use tauri::{AppHandle, Emitter, Manager};
-#22 270.9    |                                 ^^^^^^^
-#22 270.9
-#22 272.1 warning: unused variable: `schema`
-#22 272.1   --> src/proxy/common/tool_adapter.rs:26:27
-#22 272.1    |
-#22 272.1 26 |     fn pre_process(&self, schema: &mut Value) -> Result<(), String> {
-#22 272.1    |                           ^^^^^^ help: if this is intentional, prefix it with an underscore: `_schema`
-#22 272.1
-#22 272.1 warning: unused variable: `schema`
-#22 272.1   --> src/proxy/common/tool_adapter.rs:39:28
-#22 272.1    |
-#22 272.1 39 |     fn post_process(&self, schema: &mut Value) -> Result<(), String> {
-#22 272.1    |                            ^^^^^^ help: if this is intentional, prefix it with an underscore: `_schema`
-#22 272.1
-#22 272.8 warning: unused variable: `global_thought_sig`
-#22 272.8   --> src/proxy/mappers/openai/request.rs:63:9
-#22 272.8    |
-#22 272.8 63 |     let global_thought_sig = get_thought_signature();
-#22 272.8    |         ^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_global_thought_sig`
-#22 272.8
-#22 275.5 Some errors have detailed explanations: E0382, E0433.
-#22 275.5 For more information about an error, try `rustc --explain E0382`.
-#22 275.6 warning: `antigravity_tools` (lib) generated 35 warnings
-#22 275.6 error: could not compile `antigravity_tools` (lib) due to 8 previous errors; 35 warnings emitted
-#22 275.8 failed to build app: failed to build app
-#22 275.8        Error failed to build app: failed to build app
+22 195.1    Compiling async-stream-impl v0.3.6
+#22 195.6    Compiling quick-xml v0.38.4
+#22 195.7    Compiling iana-time-zone v0.1.64
+#22 195.9    Compiling http-range-header v0.4.2
+#22 196.7    Compiling fallible-streaming-iterator v0.1.9
+#22 196.7    Compiling minisign-verify v0.2.4
+#22 196.9    Compiling fallible-iterator v0.3.0
+#22 197.0    Compiling matchit v0.7.3
+#22 197.4    Compiling axum v0.7.9
+#22 197.6    Compiling plist v1.8.0
+#22 197.7    Compiling tower-http v0.5.2
+#22 199.5    Compiling chrono v0.4.43
+#22 200.7    Compiling async-stream v0.3.6
+#22 200.8    Compiling dirs v5.0.1
+#22 201.1    Compiling aes-gcm v0.10.3
+#22 202.2    Compiling tauri-plugin-single-instance v2.3.7
+#22 203.7    Compiling
+eventsource-stream v0.2.3
+#22 204.7    Compiling
+sysinfo v0.31.4
+#22 206.9    Compiling tracing-appender v0.2.4
+#22 208.7    Compiling tower v0.4.13
+#22 209.4    Compiling dashmap v6.1.0
+#22 210.0    Compiling
+tokio-stream v0.1.18
+#22 210.4    Compiling futures v0.3.31
+#22 210.5    Compiling machine-uid v0.5.4
+#22 234.9    Compiling rusqlite v0.32.1
+#22 239.8 warning: unused import: `engine::general_purpose`
+#22 239.8  --> src/modules/db.rs:2:14
+#22 239.8   |
+#22 239.8 2 | use base64::{engine::general_purpose, Engine as _};
+#22 239.8   |              ^^^^^^^^^^^^^^^^^^^^^^^
+#22 239.8   |
+#22 239.8   = note: `#[warn(unused_imports)]` on by default
+#22 239.8
+#22 239.8 warning: unused import: `tauri::State`
+#22 239.8  --> src/commands/user_token.rs:1:5
+#22 239.8   |
+#22 239.8 1 | use tauri::State;
+#22 239.8   |     ^^^^^^^^^^^^
+#22 239.8
+#22 239.8 warning: unused imports: `add_openai_api_account`, `add_openai_web_account`, `start_openai_oauth_flow`, and `validate_openai_session`
+#22 239.8   --> src/commands/mod.rs:22:27
+#22 239.8    |
+#22 239.8 22 | pub use openai_accounts::{add_openai_web_account, add_openai_api_account, validate_openai_session, start_openai_oauth_flow};
+#22 239.8    |                           ^^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^^
+#22 239.8
+#22 239.8 warning: unused imports: `AccountExportItem` and `AccountExportResponse`
+#22 239.8    --> src/proxy/server.rs:176:21
+#22 239.8     |
+#22 239.8 176 | use crate::models::{AccountExportItem, AccountExportResponse};
+#22 239.8     |                     ^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^
+#22 239.8
+#22 239.8 warning: unused import: `chatgpt::*`
+#22 239.8  --> src/proxy/clients/mod.rs:3:9
+#22 239.8   |
+#22 239.8 3 | pub use chatgpt::*;
+#22 239.8   |         ^^^^^^^^^^
+#22 239.8
+#22 239.8 warning: unused import: `uuid::Uuid`
+#22 239.8   --> src/proxy/handlers/openai.rs:27:5
+#22 239.8    |
+#22 239.8 27 | use uuid::Uuid;
+#22 239.8    |     ^^^^^^^^^^
+#22 239.8
+#22 239.8 warning: unused import: `RetryStrategy`
+#22 239.8  --> src/proxy/handlers/gemini.rs:9:109
+#22 239.8   |
+#22 239.8 9 | use crate::proxy::handlers::common::{determine_retry_strategy, apply_retry_strategy, should_rotate_account, RetryStrategy};
+#22 239.8   |                                                                                                             ^^^^^^^^^^^^^
+#22 239.8
+#22 239.8 warning: unused import: `tokio::time::Duration`
+#22 239.8   --> src/proxy/handlers/gemini.rs:11:5
+#22 239.8    |
+#22 239.8 11 | use tokio::time::Duration;
+#22 239.8    |     ^^^^^^^^^^^^^^^^^^^^^
+#22 239.8
+#22 239.8 warning: unused import: `json`
+#22 239.8  --> src/proxy/mappers/openai/collector.rs:7:18
+#22 239.8   |
+#22 239.8 7 | use serde_json::{json, Value};
+#22 239.8   |                  ^^^^
+#22 239.8
+#22 239.8 warning: unused import: `std::io`
+#22 239.8  --> src/proxy/mappers/openai/collector.rs:9:5
+#22 239.8   |
+#22 239.8 9 | use std::io;
+#22 239.8   |     ^^^^^^^
+#22 239.8
+#22 239.8 warning: unused import: `body::Body`
+#22 239.8  --> src/proxy/middleware/ip_filter.rs:6:5
+#22 239.8   |
+#22 239.8 6 |     body::Body,
+#22 239.8   |     ^^^^^^^^^^
+#22 239.8
+#22 239.8 warning: unused import: `config::get_thinking_budget_config`
+#22 239.8   --> src/proxy/mod.rs:30:9
+#22 239.8    |
+#22 239.8 30 | pub use config::get_thinking_budget_config;
+#22 239.8    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#22 239.8
+#22 239.8 warning: unused import: `config::ThinkingBudgetConfig`
+#22 239.8   --> src/proxy/mod.rs:35:9
+#22 239.8    |
+#22 239.8 35 | pub use config::ThinkingBudgetConfig;
+#22 239.8    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#22 239.8
+#22 239.8 warning: unused import: `config::ThinkingBudgetMode`
+#22 239.8   --> src/proxy/mod.rs:36:9
+#22 239.8    |
+#22 239.8 36 | pub use config::ThinkingBudgetMode;
+#22 239.8    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+#22 239.8
+#22 239.8 warning: unused imports: `ProxyPoolManager`, `get_global_proxy_pool`, and `init_global_proxy_pool`
+#22 239.8   --> src/proxy/mod.rs:43:22
+#22 239.8    |
+#22 239.8 43 | pub use proxy_pool::{ProxyPoolManager, get_global_proxy_pool, init_global_proxy_pool};
+#22 239.8    |                      ^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^
+#22 239.8
+#22 239.8 warning: unused imports: `Account`, `ProviderCredentials`, and `Provider`
+#22 239.8  --> src/auth/openai_oauth.rs:1:30
+#22 239.8   |
+#22 239.8 1 | use crate::models::account::{Account, Provider, ProviderCredentials};
+#22 239.8   |                              ^^^^^^^  ^^^^^^^^  ^^^^^^^^^^^^^^^^^^^
+#22 239.8
+#22 239.8 warning: unused import: `crate::proxy::server::AppState`
+#22 239.8  --> src/auth/openai_oauth.rs:2:5
+#22 239.8   |
+#22 239.8 2 | use crate::proxy::server::AppState;
+#22 239.8   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#22 239.8
+#22 239.8 warning: unused import: `Redirect`
+#22 239.8  --> src/auth/openai_oauth.rs:5:36
+#22 239.8   |
+#22 239.8 5 |     response::{Html, IntoResponse, Redirect},
+#22 239.8   |                                    ^^^^^^^^
+#22 239.8
+#22 239.8 warning: unused import: `openai_web::*`
+#22 239.8  --> src/auth/mod.rs:4:9
+#22 239.8   |
+#22 239.8 4 | pub use openai_web::*;
+#22 239.8   |         ^^^^^^^^^^^^^
+#22 239.8
+#22 239.8 warning: unused import: `warn`
+#22 239.8   --> src/lib.rs:12:21
+#22 239.8    |
+#22 239.8 12 | use tracing::{info, warn, error};
+#22 239.8    |                     ^^^^
+#22 239.8
+#22 240.9 warning: unused variable: `account_id`
+#22 240.9    --> src/modules/quota.rs:291:5
+#22 240.9     |
+#22 240.9 291 |     account_id: Option<&str>,
+#22 240.9     |     ^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_account_id`
+#22 240.9     |
+#22 240.9     = note: `#[warn(unused_variables)]` on by default
+#22 240.9
+#22 242.9 warning: value assigned to `wait_ms` is never read
+#22 242.9     --> src/proxy/token_manager.rs:1422:29
+#22 242.9      |
+#22 242.9 1422 |                     let mut wait_ms = 0;
+#22 242.9      |                             ^^^^^^^
+#22 242.9      |
+#22 242.9      = help: maybe it is overwritten before being read?
+#22 242.9      = note: `#[warn(unused_assignments)]` on by default
+#22 242.9
+#22 243.5 warning: unused variable: `reference_images`
+#22 243.5     --> src/proxy/handlers/openai.rs:1861:13
+#22 243.5      |
+#22 243.5 1861 |     let mut reference_images: Vec<String> = Vec::new(); // Store base64 data of reference images
+#22 243.5      |             ^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_reference_images`
+#22 243.5
+#22 243.6 warning: variable does not need to be mutable
+#22 243.6     --> src/proxy/handlers/openai.rs:1861:9
+#22 243.6      |
+#22 243.6 1861 |     let mut reference_images: Vec<String> = Vec::new(); // Store base64 data of reference images
+#22 243.6      |         ----^^^^^^^^^^^^^^^^
+#22 243.6      |         |
+#22 243.6      |         help: remove this `mut`
+#22 243.6      |
+#22 243.6      = note: `#[warn(unused_mut)]` on by default
+#22 243.6
+#22 243.6 warning: variable does not need to be mutable
+#22 243.6     --> src/proxy/handlers/openai.rs:1988:10
+#22 243.6      |
+#22 243.6 1988 |     let (mut image_config, _) = crate::proxy::mappers::common_utils::parse_image_config_with_params(
+#22 243.6      |          ----^^^^^^^^^^^^
+#22 243.6      |          |
+#22 243.6      |          help: remove this `mut`
+#22 243.6
+#22 243.6 warning: variable does not need to be mutable
+#22 243.6     --> src/proxy/handlers/openai.rs:2038:9
+#22 243.6      |
+#22 243.6 2038 |     let mut gemini_body = json!({
+#22 243.6      |         ----^^^^^^^^^^^
+#22 243.6      |         |
+#22 243.6      |         help: remove this `mut`
+#22 243.6
+#22 244.5 warning: unused variable: `retry_after`
+#22 244.5    --> src/proxy/handlers/gemini.rs:376:13
+#22 244.5     |
+#22 244.5 376 |         let retry_after = response.headers().get("Retry-After").and_then(|h| h.to_str().ok()).map(|s| s.to_string());
+#22 244.5     |             ^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_retry_after`
+#22 244.5
+#22 245.3 warning: unused variable: `id`
+#22 245.3     --> src/proxy/server.rs:1523:10
+#22 245.3      |
+#22 245.3 1523 |     Path(id): Path<String>,
+#22 245.3      |          ^^ help: if this is intentional, prefix it with an underscore: `_id`
+#22 245.3
+#22 245.6 warning: unused variable: `state`
+#22 245.6     --> src/proxy/server.rs:3264:11
+#22 245.6      |
+#22 245.6 3264 |     State(state): State<AppState>,
+#22 245.6      |           ^^^^^ help: if this is intentional, prefix it with an underscore: `_state`
+#22 245.6
+#22 249.4 warning: unused import: `Engine`
+#22 249.4  --> src/modules/db.rs:2:39
+#22 249.4   |
+#22 249.4 2 | use base64::{engine::general_purpose, Engine as _};
+#22 249.4   |                                       ^^^^^^
+#22 249.4
+#22 249.4 warning: unused import: `futures::TryFutureExt`
+#22 249.4   --> src/proxy/server.rs:11:5
+#22 249.4    |
+#22 249.4 11 | use futures::TryFutureExt;
+#22 249.4    |     ^^^^^^^^^^^^^^^^^^^^^
+#22 249.4
+#22 249.4 warning: unused import: `Manager`
+#22 249.4   --> src/auth/openai_oauth.rs:15:33
+#22 249.4    |
+#22 249.4 15 | use tauri::{AppHandle, Emitter, Manager};
+#22 249.4    |                                 ^^^^^^^
+#22 249.4
+#22 250.5 warning: unused variable: `schema`
+#22 250.5   --> src/proxy/common/tool_adapter.rs:26:27
+#22 250.5    |
+#22 250.5 26 |     fn pre_process(&self, schema: &mut Value) -> Result<(), String> {
+#22 250.5    |                           ^^^^^^ help: if this is intentional, prefix it with an underscore: `_schema`
+#22 250.5
+#22 250.5 warning: unused variable: `schema`
+#22 250.5   --> src/proxy/common/tool_adapter.rs:39:28
+#22 250.5    |
+#22 250.5 39 |     fn post_process(&self, schema: &mut Value) -> Result<(), String> {
+#22 250.5    |                            ^^^^^^ help: if this is intentional, prefix it with an underscore: `_schema`
+#22 250.5
+#22 251.3 warning: unused variable: `global_thought_sig`
+#22 251.3   --> src/proxy/mappers/openai/request.rs:63:9
+#22 251.3    |
+#22 251.3 63 |     let global_thought_sig = get_thought_signature();
+#22 251.3    |         ^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_global_thought_sig`
+#22 251.3
+#22 251.6 warning: unused variable: `proxy_state`
+#22 251.6   --> src/lib.rs:81:17
+#22 251.6    |
+#22 251.6 81 |             let proxy_state = commands::proxy::ProxyServiceState::new();
+#22 251.6    |                 ^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_proxy_state`
+#22 251.6
+#22 251.6 warning: unused variable: `cf_state`
+#22 251.6   --> src/lib.rs:82:17
+#22 251.6    |
+#22 251.6 82 |             let cf_state = Arc::new(commands::cloudflared::CloudflaredState::new());
+#22 251.6    |                 ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_cf_state`
+#22 251.6
+#22 251.7 warning: variable does not need to be mutable
+#22 251.7    --> src/lib.rs:103:20
+#22 251.7     |
+#22 251.7 103 |                 Ok(mut config) => {
+#22 251.7     |                    ----^^^^^^
+#22 251.7     |                    |
+#22 251.7     |                    help: remove this `mut`
+#22 251.7
+#22 255.2 warning: function `create_warmup_client` is never used
+#22 255.2   --> src/modules/quota.rs:65:10
+#22 255.2    |
+#22 255.2 65 | async fn create_warmup_client(account_id: Option<&str>) -> reqwest::Client {
+#22 255.2    |          ^^^^^^^^^^^^^^^^^^^^
+#22 255.2    |
+#22 255.2    = note: `#[warn(dead_code)]` on by default
+#22 255.2
+#22 255.2 warning: struct `ApiState` is never constructed
+#22 255.2   --> src/modules/http_api.rs:85:12
+#22 255.2    |
+#22 255.2 85 | pub struct ApiState {
+#22 255.2    |            ^^^^^^^^
+#22 255.2    |
+#22 255.2    = note: `ApiState` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+#22 255.2
+#22 255.2 warning: associated function `new` is never used
+#22 255.2   --> src/modules/http_api.rs:92:12
+#22 255.2    |
+#22 255.2 91 | impl ApiState {
+#22 255.2    | ------------- associated function in this implementation
+#22 255.2 92 |     pub fn new(integration: crate::modules::integration::SystemManager) -> Self {
+#22 255.2    |            ^^^
+#22 255.2
+#22 255.2 warning: struct `HealthResponse` is never constructed
+#22 255.2    --> src/modules/http_api.rs:105:8
+#22 255.2     |
+#22 255.2 105 | struct HealthResponse {
+#22 255.2     |        ^^^^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: struct `AccountResponse` is never constructed
+#22 255.2    --> src/modules/http_api.rs:111:8
+#22 255.2     |
+#22 255.2 111 | struct AccountResponse {
+#22 255.2     |        ^^^^^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: struct `QuotaResponse` is never constructed
+#22 255.2    --> src/modules/http_api.rs:123:8
+#22 255.2     |
+#22 255.2 123 | struct QuotaResponse {
+#22 255.2     |        ^^^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: struct `ModelQuota` is never constructed
+#22 255.2    --> src/modules/http_api.rs:130:8
+#22 255.2     |
+#22 255.2 130 | struct ModelQuota {
+#22 255.2     |        ^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: struct `AccountListResponse` is never constructed
+#22 255.2    --> src/modules/http_api.rs:137:8
+#22 255.2     |
+#22 255.2 137 | struct AccountListResponse {
+#22 255.2     |        ^^^^^^^^^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: struct `CurrentAccountResponse` is never constructed
+#22 255.2    --> src/modules/http_api.rs:143:8
+#22 255.2     |
+#22 255.2 143 | struct CurrentAccountResponse {
+#22 255.2     |        ^^^^^^^^^^^^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: struct `SwitchResponse` is never constructed
+#22 255.2    --> src/modules/http_api.rs:148:8
+#22 255.2     |
+#22 255.2 148 | struct SwitchResponse {
+#22 255.2     |        ^^^^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: struct `RefreshResponse` is never constructed
+#22 255.2    --> src/modules/http_api.rs:154:8
+#22 255.2     |
+#22 255.2 154 | struct RefreshResponse {
+#22 255.2     |        ^^^^^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: struct `BindDeviceResponse` is never constructed
+#22 255.2    --> src/modules/http_api.rs:161:8
+#22 255.2     |
+#22 255.2 161 | struct BindDeviceResponse {
+#22 255.2     |        ^^^^^^^^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: struct `DeviceProfileResponse` is never constructed
+#22 255.2    --> src/modules/http_api.rs:168:8
+#22 255.2     |
+#22 255.2 168 | struct DeviceProfileResponse {
+#22 255.2     |        ^^^^^^^^^^^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: struct `ErrorResponse` is never constructed
+#22 255.2    --> src/modules/http_api.rs:176:8
+#22 255.2     |
+#22 255.2 176 | struct ErrorResponse {
+#22 255.2     |        ^^^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: struct `LogsResponse` is never constructed
+#22 255.2    --> src/modules/http_api.rs:181:8
+#22 255.2     |
+#22 255.2 181 | struct LogsResponse {
+#22 255.2     |        ^^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: field `account_id` is never read
+#22 255.2    --> src/modules/http_api.rs:192:5
+#22 255.2     |
+#22 255.2 191 | struct SwitchRequest {
+#22 255.2     |        ------------- field in this struct
+#22 255.2 192 |     account_id: String,
+#22 255.2     |     ^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: field `mode` is never read
+#22 255.2    --> src/modules/http_api.rs:198:5
+#22 255.2     |
+#22 255.2 196 | struct BindDeviceRequest {
+#22 255.2     |        ----------------- field in this struct
+#22 255.2 197 |     #[serde(default = "default_bind_mode")]
+#22 255.2 198 |     mode: String,
+#22 255.2     |     ^^^^
+#22 255.2
+#22 255.2 warning: fields `limit`, `offset`, `filter`, and `errors_only` are never read
+#22 255.2    --> src/modules/http_api.rs:208:5
+#22 255.2     |
+#22 255.2 206 | struct LogsRequest {
+#22 255.2     |        ----------- fields in this struct
+#22 255.2 207 |     #[serde(default)]
+#22 255.2 208 |     limit: usize,
+#22 255.2     |     ^^^^^
+#22 255.2 209 |     #[serde(default)]
+#22 255.2 210 |     offset: usize,
+#22 255.2     |     ^^^^^^
+#22 255.2 211 |     #[serde(default)]
+#22 255.2 212 |     filter: String,
+#22 255.2     |     ^^^^^^
+#22 255.2 213 |     #[serde(default)]
+#22 255.2 214 |     errors_only: bool,
+#22 255.2     |     ^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: function `health` is never used
+#22 255.2    --> src/modules/http_api.rs:222:10
+#22 255.2     |
+#22 255.2 222 | async fn health() -> impl IntoResponse {
+#22 255.2     |          ^^^^^^
+#22 255.2
+#22 255.2 warning: function `list_accounts` is never used
+#22 255.2    --> src/modules/http_api.rs:230:10
+#22 255.2     |
+#22 255.2 230 | async fn list_accounts() -> Result<impl IntoResponse, (StatusCode, Json<ErrorResponse>)> {
+#22 255.2     |          ^^^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: function `get_current_account` is never used
+#22 255.2    --> src/modules/http_api.rs:279:10
+#22 255.2     |
+#22 255.2 279 | async fn get_current_account() -> Result<impl IntoResponse, (StatusCode, Json<ErrorResponse>)> {
+#22 255.2     |          ^^^^^^^^^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: function `switch_account` is never used
+#22 255.2    --> src/modules/http_api.rs:317:10
+#22 255.2     |
+#22 255.2 317 | async fn switch_account(
+#22 255.2     |          ^^^^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: function `refresh_all_quotas` is never used
+#22 255.2    --> src/modules/http_api.rs:372:10
+#22 255.2     |
+#22 255.2 372 | async fn refresh_all_quotas() -> Result<impl IntoResponse, (StatusCode, Json<ErrorResponse>)> {
+#22 255.2     |          ^^^^^^^^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: function `bind_device` is never used
+#22 255.2    --> src/modules/http_api.rs:401:10
+#22 255.2     |
+#22 255.2 401 | async fn bind_device(
+#22 255.2     |          ^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: function `get_logs` is never used
+#22 255.2    --> src/modules/http_api.rs:430:10
+#22 255.2     |
+#22 255.2 430 | async fn get_logs(
+#22 255.2     |          ^^^^^^^^
+#22 255.2
+#22 255.2 warning: function `start_server` is never used
+#22 255.2    --> src/modules/http_api.rs:452:14
+#22 255.2     |
+#22 255.2 452 | pub async fn start_server(port: u16, integration: crate::modules::integration::SystemManager) -> Result<(), String> {
+#22 255.2     |              ^^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: function `spawn_server` is never used
+#22 255.2    --> src/modules/http_api.rs:487:8
+#22 255.2     |
+#22 255.2 487 | pub fn spawn_server(port: u16, integration: crate::modules::integration::SystemManager) {
+#22 255.2     |        ^^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: function `cleanup_old_ip_logs` is never used
+#22 255.2    --> src/modules/security_db.rs:362:8
+#22 255.2     |
+#22 255.2 362 | pub fn cleanup_old_ip_logs(days: i64) -> Result<usize, String> {
+#22 255.2     |        ^^^^^^^^^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: function `get_ip_access_logs_count` is never used
+#22 255.2    --> src/modules/security_db.rs:661:8
+#22 255.2     |
+#22 255.2 661 | pub fn get_ip_access_logs_count(ip_filter: Option<&str>, blocked_only: bool) -> Result<u64, String> {
+#22 255.2     |        ^^^^^^^^^^^^^^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: function `get_token_by_id` is never used
+#22 255.2    --> src/modules/user_token_db.rs:246:8
+#22 255.2     |
+#22 255.2 246 | pub fn get_token_by_id(id: &str) -> Result<Option<UserToken>, String> {
+#22 255.2     |        ^^^^^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: field `bundle_version` is never read
+#22 255.2  --> src/modules/version.rs:9:9
+#22 255.2   |
+#22 255.2 7 | pub struct AntigravityVersion {
+#22 255.2   |            ------------------ field in this struct
+#22 255.2 8 |     pub short_version: String,
+#22 255.2 9 |     pub bundle_version: String,
+#22 255.2   |         ^^^^^^^^^^^^^^
+#22 255.2   |
+#22 255.2   = note: `AntigravityVersion` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis
+#22 255.2
+#22 255.2 warning: field `server_handle` is never read
+#22 255.2   --> src/commands/proxy.rs:31:9
+#22 255.2    |
+#22 255.2 29 | pub struct AdminServerInstance {
+#22 255.2    |            ------------------- field in this struct
+#22 255.2 30 |     pub axum_server: crate::proxy::AxumServer,
+#22 255.2 31 |     pub server_handle: tokio::task::JoinHandle<()>,
+#22 255.2    |         ^^^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: field `server_handle` is never read
+#22 255.2   --> src/commands/proxy.rs:39:9
+#22 255.2    |
+#22 255.2 35 | pub struct ProxyServiceInstance {
+#22 255.2    |            -------------------- field in this struct
+#22 255.2 ...
+#22 255.2 39 |     pub server_handle: tokio::task::JoinHandle<()>,
+#22 255.2    |         ^^^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: field `cloudflared_state` is never read
+#22 255.2    --> src/proxy/server.rs:226:9
+#22 255.2     |
+#22 255.2 217 | pub struct AxumServer {
+#22 255.2     |            ---------- field in this struct
+#22 255.2 ...
+#22 255.2 226 |     pub cloudflared_state: Arc<crate::commands::cloudflared::CloudflaredState>,
+#22 255.2     |         ^^^^^^^^^^^^^^^^^
+#22 255.2     |
+#22 255.2     = note: `AxumServer` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+#22 255.2
+#22 255.2 warning: fields `limit` and `offset` are never read
+#22 255.2     --> src/proxy/server.rs:1200:5
+#22 255.2      |
+#22 255.2 1198 | struct LogsRequest {
+#22 255.2      |        ----------- fields in this struct
+#22 255.2 1199 |     #[serde(default)]
+#22 255.2 1200 |     limit: usize,
+#22 255.2      |     ^^^^^
+#22 255.2 1201 |     #[serde(default)]
+#22 255.2 1202 |     offset: usize,
+#22 255.2      |     ^^^^^^
+#22 255.2      |
+#22 255.2      = note: `LogsRequest` has derived impls for the traits `Default` and `Debug`, but these are intentionally ignored during dead code analysis
+#22 255.2
+#22 255.2 warning: function `admin_get_logs` is never used
+#22 255.2     --> src/proxy/server.rs:1209:10
+#22 255.2      |
+#22 255.2 1209 | async fn admin_get_logs(
+#22 255.2      |          ^^^^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: field `state` is never read
+#22 255.2     --> src/proxy/server.rs:2818:5
+#22 255.2      |
+#22 255.2 2816 | struct OAuthParams {
+#22 255.2      |        ----------- field in this struct
+#22 255.2 2817 |     code: String,
+#22 255.2 2818 |     state: Option<String>,
+#22 255.2      |     ^^^^^
+#22 255.2
+#22 255.2 warning: field `id` is never read
+#22 255.2   --> src/proxy/clients/chatgpt.rs:46:5
+#22 255.2    |
+#22 255.2 44 | struct ResponseMessage {
+#22 255.2    |        --------------- field in this struct
+#22 255.2 45 |     #[serde(default)]
+#22 255.2 46 |     id: Option<String>,
+#22 255.2    |     ^^
+#22 255.2    |
+#22 255.2    = note: `ResponseMessage` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+#22 255.2
+#22 255.2 warning: static `TOOL_ADAPTERS` is never used
+#22 255.2   --> src/proxy/common/json_schema.rs:25:8
+#22 255.2    |
+#22 255.2 25 | static TOOL_ADAPTERS: Lazy<Vec<Box<dyn ToolAdapter>>> = Lazy::new(|| {
+#22 255.2    |        ^^^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: function `clean_json_schema_for_tool` is never used
+#22 255.2   --> src/proxy/common/json_schema.rs:77:8
+#22 255.2    |
+#22 255.2 77 | pub fn clean_json_schema_for_tool(value: &mut Value, tool_name: &str) {
+#22 255.2    |        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: methods `matches`, `pre_process`, and `post_process` are never used
+#22 255.2   --> src/proxy/common/tool_adapter.rs:15:8
+#22 255.2    |
+#22 255.2 7  | pub trait ToolAdapter: Send + Sync {
+#22 255.2    |           ----------- methods in this trait
+#22 255.2 ...
+#22 255.2 15 |     fn matches(&self, tool_name: &str) -> bool;
+#22 255.2    |        ^^^^^^^
+#22 255.2 ...
+#22 255.2 26 |     fn pre_process(&self, schema: &mut Value) -> Result<(), String> {
+#22 255.2    |        ^^^^^^^^^^^
+#22 255.2 ...
+#22 255.2 39 |     fn post_process(&self, schema: &mut Value) -> Result<(), String> {
+#22 255.2    |        ^^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: struct `CacheEntry` is never constructed
+#22 255.2  --> src/proxy/common/schema_cache.rs:9:8
+#22 255.2   |
+#22 255.2 9 | struct CacheEntry {
+#22 255.2   |        ^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: struct `SchemaCache` is never constructed
+#22 255.2   --> src/proxy/common/schema_cache.rs:19:8
+#22 255.2    |
+#22 255.2 19 | struct SchemaCache {
+#22 255.2    |        ^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: fields `total_requests`, `cache_hits`, and `cache_misses` are never read
+#22 255.2   --> src/proxy/common/schema_cache.rs:30:9
+#22 255.2    |
+#22 255.2 28 | pub struct CacheStats {
+#22 255.2    |            ---------- fields in this struct
+#22 255.2 29 |     /// 总请求次数
+#22 255.2 30 |     pub total_requests: usize,
+#22 255.2    |         ^^^^^^^^^^^^^^
+#22 255.2 31 |     /// 缓存命中次数
+#22 255.2 32 |     pub cache_hits: usize,
+#22 255.2    |         ^^^^^^^^^^
+#22 255.2 33 |     /// 缓存未命中次数
+#22 255.2 34 |     pub cache_misses: usize,
+#22 255.2    |         ^^^^^^^^^^^^
+#22 255.2    |
+#22 255.2    = note: `CacheStats` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+#22 255.2
+#22 255.2 warning: method `hit_rate` is never used
+#22 255.2   --> src/proxy/common/schema_cache.rs:39:12
+#22 255.2    |
+#22 255.2 37 | impl CacheStats {
+#22 255.2    | --------------- method in this implementation
+#22 255.2 38 |     /// 计算缓存命中率
+#22 255.2 39 |     pub fn hit_rate(&self) -> f64 {
+#22 255.2    |            ^^^^^^^^
+#22 255.2
+#22 255.2 warning: associated items `new`, `get`, `insert`, `evict_lru`, `stats`, and `clear` are never used
+#22 255.2    --> src/proxy/common/schema_cache.rs:49:8
+#22 255.2     |
+#22 255.2 48  | impl SchemaCache {
+#22 255.2     | ---------------- associated items in this implementation
+#22 255.2 49  |     fn new() -> Self {
+#22 255.2     |        ^^^
+#22 255.2 ...
+#22 255.2 57  |     fn get(&mut self, key: &str) -> Option<Value> {
+#22 255.2     |        ^^^
+#22 255.2 ...
+#22 255.2 73  |     fn insert(&mut self, key: String, schema: Value) {
+#22 255.2     |        ^^^^^^
+#22 255.2 ...
+#22 255.2 89  |     fn evict_lru(&mut self) {
+#22 255.2     |        ^^^^^^^^^
+#22 255.2 ...
+#22 255.2 107 |     fn stats(&self) -> CacheStats {
+#22 255.2     |        ^^^^^
+#22 255.2 ...
+#22 255.2 112 |     fn clear(&mut self) {
+#22 255.2     |        ^^^^^
+#22 255.2
+#22 255.2 warning: static `SCHEMA_CACHE` is never used
+#22 255.2    --> src/proxy/common/schema_cache.rs:119:8
+#22 255.2     |
+#22 255.2 119 | static SCHEMA_CACHE: Lazy<RwLock<SchemaCache>> = Lazy::new(|| RwLock::new(SchemaCache::new()));
+#22 255.2     |        ^^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: function `compute_schema_hash` is never used
+#22 255.2    --> src/proxy/common/schema_cache.rs:124:4
+#22 255.2     |
+#22 255.2 124 | fn compute_schema_hash(schema: &Value) -> String {
+#22 255.2     |    ^^^^^^^^^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: function `clean_json_schema_cached` is never used
+#22 255.2    --> src/proxy/common/schema_cache.rs:146:8
+#22 255.2     |
+#22 255.2 146 | pub fn clean_json_schema_cached(schema: &mut Value, tool_name: &str) {
+#22 255.2     |        ^^^^^^^^^^^^^^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: function `get_cache_stats` is never used
+#22 255.2    --> src/proxy/common/schema_cache.rs:171:8
+#22 255.2     |
+#22 255.2 171 | pub fn get_cache_stats() -> CacheStats {
+#22 255.2     |        ^^^^^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: function `clear_cache` is never used
+#22 255.2    --> src/proxy/common/schema_cache.rs:179:8
+#22 255.2     |
+#22 255.2 179 | pub fn clear_cache() {
+#22 255.2     |        ^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: methods `bypass_signature_matching` and `supported_protocols` are never used
+#22 255.2   --> src/proxy/common/client_adapter.rs:28:8
+#22 255.2    |
+#22 255.2 15 | pub trait ClientAdapter: Send + Sync {
+#22 255.2    |           ------------- methods in this trait
+#22 255.2 ...
+#22 255.2 28 |     fn bypass_signature_matching(&self) -> bool {
+#22 255.2    |        ^^^^^^^^^^^^^^^^^^^^^^^^^
+#22 255.2 ...
+#22 255.2 56 |     fn supported_protocols(&self) -> Vec<Protocol> {
+#22 255.2    |        ^^^^^^^^^^^^^^^^^^^
+#22 255.2
+#22 255.2 warning: variant `Soft` is never constructed
+#22 255.2   --> src/proxy/mappers/context_manager.rs:43:5
+#22 255.2    |
+#22 255.2 41 | pub enum PurificationStrategy {
+#22 255.2    |          -------------------- variant in this enum
+#22 255.2 42 |     /// Soft purification: Retains recent thinking blocks (~2 turns), removes older ones
+#22 255.2 43 |     Soft,
+#22 255.2    |     ^^^^
+#22 255.2    |
+#22 255.2    = note: `PurificationStrategy` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis
+#22 255.2
+#22 255.2 warning: field `token` is never read
+#22 255.2    --> src/proxy/middleware/auth.rs:230:9
+#22 255.2     |
+#22 255.2 228 | pub struct UserTokenIdentity {
+#22 255.2     |            ----------------- field in this struct
+#22 255.2 229 |     pub token_id: String,
+#22 255.2 230 |     pub token: String,
+#22 255.2     |         ^^^^^
+#22 255.2     |
+#22 255.2     = note: `UserTokenIdentity` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+#22 255.2
+#22 255.2 warning: field `state` is never read
+#22 255.2   --> src/auth/openai_oauth.rs:34:5
+#22 255.2    |
+#22 255.2 32 | struct CallbackParams {
+#22 255.2    |        -------------- field in this struct
+#22 255.2 33 |     code: String,
+#22 255.2 34 |     state: Option<String>,
+#22 255.2    |     ^^^^^
+#22 255.2
+#22 255.2 warning: fields `expires_in` and `scope` are never read
+#22 255.2   --> src/auth/openai_oauth.rs:41:5
+#22 255.2    |
+#22 255.2 38 | struct TokenResponse {
+#22 255.2    |        ------------- fields in this struct
+#22 255.2 ...
+#22 255.2 41 |     expires_in: Option<u64>,
+#22 255.2    |     ^^^^^^^^^^
+#22 255.2 42 |     id_token: Option<String>,
+#22 255.2 43 |     scope: Option<String>,
+#22 255.2    |     ^^^^^
+#22 255.2    |
+#22 255.2    = note: `TokenResponse` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+#22 255.2
+#22 255.3 warning: comparison is useless due to type limits
+#22 255.3    --> src/commands/security.rs:297:16
+#22 255.3     |
+#22 255.3 297 |             if num > 255 {
+#22 255.3     |                ^^^^^^^^^
+#22 255.3     |
+#22 255.3     = note: `#[warn(unused_comparisons)]` on by default
+#22 255.3
+#22 370.2 warning: `antigravity_tools` (lib) generated 95 warnings (run `cargo fix --lib -p antigravity_tools` to apply 24 suggestions)
+#22 374.9     Finished `release` profile [optimized] target(s) in 5m 43s
+#22 375.1        Built application at: /app/src-tauri/target/release/antigravity_tools
+#22 375.1         Info Patching binary "/app/src-tauri/target/release/antigravity_tools" for type deb
+#22 375.2     Bundling Antigravity Tools_4.1.5_amd64.deb (/app/src-tauri/target/release/bundle/deb/Antigravity Tools_4.1.5_amd64.deb)
+#22 376.2         Info Patching binary "/app/src-tauri/target/release/antigravity_tools" for type rpm
+#22 376.3     Bundling Antigravity Tools-4.1.5-1.x86_64.rpm (/app/src-tauri/target/release/bundle/rpm/Antigravity Tools-4.1.5-1.x86_64.rpm)
+#22 409.3         Info Patching binary "/app/src-tauri/target/release/antigravity_tools" for type appimage
+#22 409.4  Downloading https://github.com/tauri-apps/binary-releases/releases/download/apprun-old/AppRun-x86_64
+#22 409.8  Downloading https://github.com/tauri-apps/binary-releases/releases/download/linuxdeploy/linuxdeploy-x86_64.AppImage
+#22 410.2  Downloading https://github.com/linuxdeploy/linuxdeploy-plugin-appimage/releases/download/continuous/linuxdeploy-plugin-appimage-x86_64.AppImage
+#22 410.9     Bundling Antigravity Tools_4.1.5_amd64.AppImage (/app/src-tauri/target/release/bundle/appimage/Antigravity Tools_4.1.5_amd64.AppImage)
+#22 411.0 failed to bundle project xdg-open binary not found /usr/bin/xdg-open: No such file or directory (os error 2)
+#22 411.0        Error failed to bundle project xdg-open binary not found /usr/bin/xdg-open: No such file or directory (os error 2)
 #22 ERROR: process "/bin/sh -c npm run tauri build" did not complete successfully: exit code: 1
 ------
 > [tauri-builder 12/12] RUN npm run tauri build:
-272.8    |
-272.8 63 |     let global_thought_sig = get_thought_signature();
-272.8    |         ^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_global_thought_sig`
-272.8
-275.5 Some errors have detailed explanations: E0382, E0433.
-275.5 For more information about an error, try `rustc --explain E0382`.
-275.6 warning: `antigravity_tools` (lib) generated 35 warnings
-275.6 error: could not compile `antigravity_tools` (lib) due to 8 previous errors; 35 warnings emitted
-275.8 failed to build app: failed to build app
-275.8        Error failed to build app: failed to build app
+375.2     Bundling Antigravity Tools_4.1.5_amd64.deb (/app/src-tauri/target/release/bundle/deb/Antigravity Tools_4.1.5_amd64.deb)
+376.2         Info Patching binary "/app/src-tauri/target/release/antigravity_tools" for type rpm
+376.3     Bundling Antigravity Tools-4.1.5-1.x86_64.rpm (/app/src-tauri/target/release/bundle/rpm/Antigravity Tools-4.1.5-1.x86_64.rpm)
+409.3         Info Patching binary "/app/src-tauri/target/release/antigravity_tools" for type appimage
+409.4  Downloading https://github.com/tauri-apps/binary-releases/releases/download/apprun-old/AppRun-x86_64
+409.8  Downloading https://github.com/tauri-apps/binary-releases/releases/download/linuxdeploy/linuxdeploy-x86_64.AppImage
+410.2  Downloading https://github.com/linuxdeploy/linuxdeploy-plugin-appimage/releases/download/continuous/linuxdeploy-plugin-appimage-x86_64.AppImage
+410.9     Bundling Antigravity Tools_4.1.5_amd64.AppImage (/app/src-tauri/target/release/bundle/appimage/Antigravity Tools_4.1.5_amd64.AppImage)
+411.0 failed to bundle project xdg-open binary not found /usr/bin/xdg-open: No such file or directory (os error 2)
+411.0        Error failed to bundle project xdg-open binary not found /usr/bin/xdg-open: No such file or directory (os error 2)
 ------
 Dockerfile:72
 --------------------
@@ -385,7 +776,7 @@ Dockerfile:72
 failed to solve: process "/bin/sh -c npm run tauri build" did not complete successfully: exit code: 1
 exit status 1
 ========================================
-Deployment failed: Command execution failed (exit code 1): docker exec cskkg4ockss0gc0w0wks08cg bash -c 'COOLIFY_BRANCH=main COOLIFY_RESOURCE_UUID=ewgsw0ckcowskc8ss4csok48  docker compose --env-file /artifacts/build-time.env --project-name ewgsw0ckcowskc8ss4csok48 --project-directory /artifacts/cskkg4ockss0gc0w0wks08cg -f /artifacts/cskkg4ockss0gc0w0wks08cg/docker/docker-compose.yml build --pull --build-arg COOLIFY_URL --build-arg COOLIFY_FQDN --build-arg SERVICE_URL_ANTIGRAVITY_MANAGER --build-arg SERVICE_FQDN_ANTIGRAVITY_MANAGER --build-arg LOG_LEVEL --build-arg WEB_PASSWORD --build-arg PORT --build-arg CACHEBUST --build-arg COOLIFY_BUILD_SECRETS_HASH=f54463b661cdbc9c867d623bf6c9c13ffe5e77a38374ca1f332d1dc99fab7434'
+Deployment failed: Command execution failed (exit code 1): docker exec k0gs0k00sswkw80000ssk8c0 bash -c 'COOLIFY_BRANCH=main COOLIFY_RESOURCE_UUID=ewgsw0ckcowskc8ss4csok48  docker compose --env-file /artifacts/build-time.env --project-name ewgsw0ckcowskc8ss4csok48 --project-directory /artifacts/k0gs0k00sswkw80000ssk8c0 -f /artifacts/k0gs0k00sswkw80000ssk8c0/docker/docker-compose.yml build --pull --build-arg COOLIFY_URL --build-arg COOLIFY_FQDN --build-arg SERVICE_URL_ANTIGRAVITY_MANAGER --build-arg SERVICE_FQDN_ANTIGRAVITY_MANAGER --build-arg LOG_LEVEL --build-arg WEB_PASSWORD --build-arg PORT --build-arg CACHEBUST --build-arg COOLIFY_BUILD_SECRETS_HASH=f54463b661cdbc9c867d623bf6c9c13ffe5e77a38374ca1f332d1dc99fab7434'
 Error: Dockerfile:72
 --------------------
 70 |
@@ -406,6 +797,6 @@ Stack trace (first 5 lines):
 #3 /var/www/html/app/Jobs/ApplicationDeploymentJob.php(730): App\Jobs\ApplicationDeploymentJob->execute_remote_command()
 #4 /var/www/html/app/Jobs/ApplicationDeploymentJob.php(467): App\Jobs\ApplicationDeploymentJob->deploy_docker_compose_buildpack()
 ========================================
-Gracefully shutting down build container: cskkg4ockss0gc0w0wks08cg
-[CMD]: docker stop -t 30 cskkg4ockss0gc0w0wks08cg
-cskkg4ockss0gc0w0wks08cg
+Gracefully shutting down build container: k0gs0k00sswkw80000ssk8c0
+[CMD]: docker stop -t 30 k0gs0k00sswkw80000ssk8c0
+k0gs0k00sswkw80000ssk8c0

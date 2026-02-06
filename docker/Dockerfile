@@ -60,8 +60,8 @@ RUN echo "Cache bust: $CACHEBUST"
 # Copy the entire project
 COPY . .
 
-# Build with Tauri (Frontend + Backend)
-RUN npm run tauri build
+# Build with Tauri (Frontend + Backend) - no-bundle since we only need the binary for Docker
+RUN npm run tauri build -- --no-bundle
 
 # --- Final Runtime Stage ---
 FROM debian:bookworm-slim
