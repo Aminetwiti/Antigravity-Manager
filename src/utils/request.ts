@@ -29,6 +29,11 @@ const COMMAND_MAPPING: Record<string, { url: string; method: 'GET' | 'POST' | 'D
   'delete_device_version': { url: '/api/accounts/:accountId/device-versions/:versionId', method: 'DELETE' },
   'open_device_folder': { url: '/api/system/open-folder', method: 'POST' },
 
+  // OpenAI Accounts
+  'add_openai_web_account': { url: '/api/accounts/openai/web', method: 'POST' },
+  'add_openai_api_account': { url: '/api/accounts/openai/api', method: 'POST' },
+  'validate_openai_session': { url: '/api/accounts/openai/validate', method: 'POST' },
+
   // Proxy Control & Status
   'get_proxy_status': { url: '/api/proxy/status', method: 'GET' },
   'start_proxy_service': { url: '/api/proxy/start', method: 'POST' },

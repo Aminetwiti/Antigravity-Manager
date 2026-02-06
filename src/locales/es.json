@@ -520,7 +520,7 @@
             "title": "Configuración del Servicio",
             "port": "Puerto de Escucha",
             "port_tooltip": "Puerto TCP en el que escucha el Proxy API local. Detenga el servicio para cambiarlo, luego reinicie para aplicar.",
-            "port_hint": "Predeterminado 8045, se requiere reinicio para aplicar cambios",
+            "port_hint": "Predeterminado 8046, se requiere reinicio para aplicar cambios",
             "auto_start": "Inicio Automático con la App",
             "auto_start_tooltip": "Inicia automáticamente el servicio de Proxy API local cuando se lanza la aplicación.",
             "allow_lan_access": "Permitir Acceso LAN",

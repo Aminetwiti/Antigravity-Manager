@@ -787,7 +787,7 @@ pub async fn refresh_all_quotas_logic() -> Result<String, String> {
   "proxy": {
     "enabled": true,
     "host": "127.0.0.1",
-    "port": 8045,
+    "port": 8046,
     "scheduling_mode": "CacheFirst",
     "request_timeout": 60
   },

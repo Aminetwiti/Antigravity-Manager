@@ -2,7 +2,7 @@
 
 本文档详细介绍了 **Antigravity Tools** 暴露的 HTTP API 接口。
 
-> **注意**: 在 v4.0.1 版本中，所有的服务（包括 AI 反代和系统管理）均已整合至统一端口 **8045**。原有的 19527 端口已废弃。
+> **注意**: 在 v4.0.1 版本中，所有的服务（包括 AI 反代和系统管理）均已整合至统一端口 **8046**。原有的 19527 端口已废弃。
 
 ## 1. 概览 (Overview)
 
@@ -23,7 +23,7 @@ Antigravity Gateway 是一个双重角色的服务器：
 
 ## 2. 管理接口 (Management API)
 
-**Base URL**: `http://<host>:8045/api`
+**Base URL**: `http://<host>:8046/api`
 
 ### 2.1 账号管理 (Account Management)
 
@@ -77,7 +77,7 @@ Antigravity Gateway 是一个双重角色的服务器：
 
 ## 3. AI 协议接口 (AI Protocol Interface)
 
-**Base URL**: `http://<host>:8045`
+**Base URL**: `http://<host>:8046`
 
 本服务完全兼容主流 AI 厂商的官方协议规范。您可以直接将本服务的地址填入到支持 OpenAI / Claude 的客户端中。
 

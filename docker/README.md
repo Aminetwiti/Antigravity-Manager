@@ -50,7 +50,7 @@ docker compose up -d
 # 啟動容器 (請替换 your-secret-key 為強密鑰)
 docker run -d \
   --name antigravity-manager \
-  -p 8045:8045 \
+  -p 8046:8046 \
   -e API_KEY=your-api-key \
   -e WEB_PASSWORD=your-login-password \
   -e ABV_MAX_BODY_SIZE=104857600 \
@@ -116,7 +116,7 @@ docker build --build-arg USE_MIRROR=true -t antigravity-manager:latest -f docker
 
 | 變量名 | 默認值 | 說明 |
 | :--- | :--- | :--- |
-| `PORT` | `8045` | 容器內服務監聽端口 |
+| `PORT` | `8046` | 容器內服務監聽端口 |
 | `ABV_API_KEY` | - | **[重要]** 代理 API 密鑰。客戶端（如 Claude Code）訪問時需提供的 Key |
 | `ABV_WEB_PASSWORD` | - | **[安全]** Web 管理後台登錄密碼。若不設置則回退使用 API Key |
 | `ABV_MAX_BODY_SIZE` | `104857600` | **[性能]** 最大請求體限制 (Byte)。默認 100MB，用於解決大圖傳輸 413 錯誤 |
@@ -128,8 +128,8 @@ docker build --build-arg USE_MIRROR=true -t antigravity-manager:latest -f docker
 請務必將宿主機目錄掛載至容器內的 `/root/.antigravity_tools`，否則賬號和配置在容器重啟後會丟失。
 
 ## 🌐 訪問位址
-*   **管理界面**: [http://localhost:8045](http://localhost:8045)
-*   **API Base**: [http://localhost:8045/v1](http://localhost:8045/v1)
+*   **管理界面**: [http://localhost:8046](http://localhost:8046)
+*   **API Base**: [http://localhost:8046/v1](http://localhost:8046/v1)
 
 ## 📦 Docker Hub 分發 (推薦)
 若要推送至你的倉庫：

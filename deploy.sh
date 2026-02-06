@@ -25,7 +25,7 @@ log "Starting deployment of Antigravity Manager..."
 # 1. Check and Clean Ports
 log "Checking for port conflicts..."
 
-for PORT_TO_CLEAN in 8045 8046; do
+for PORT_TO_CLEAN in 8046 8046; do
     log "Checking port $PORT_TO_CLEAN..."
     if command -v lsof >/dev/null 2>&1; then
         PID=$(lsof -t -i:$PORT_TO_CLEAN)

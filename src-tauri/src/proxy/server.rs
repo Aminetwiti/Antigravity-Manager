@@ -599,6 +599,10 @@ impl AxumServer {
             )
             .route("/accounts/warmup", post(admin_warm_up_all_accounts))
             .route("/accounts/:accountId/warmup", post(admin_warm_up_account))
+            // OpenAI account management endpoints
+            .route("/accounts/openai/web", post(admin_add_openai_web_account))
+            .route("/accounts/openai/api", post(admin_add_openai_api_account))
+            .route("/accounts/openai/validate", post(admin_validate_openai_session))
             .route("/system/data-dir", get(admin_get_data_dir_path))
             .route("/system/updates/settings", get(admin_get_update_settings))
             .route(
@@ -941,6 +945,27 @@ struct AddAccountRequest {
     refresh_token: String,
 }
 
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct AddOpenAIWebAccountRequest {
+    email: String,
+    access_token: String,
+    session_token: String,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct AddOpenAIAPIAccountRequest {
+    email: String,
+    api_key: String,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct ValidateOpenAISessionRequest {
+    access_token: String,
+}
+
 async fn admin_add_account(
     State(state): State<AppState>,
     Json(payload): Json<AddAccountRequest>,
@@ -971,6 +996,152 @@ async fn admin_add_account(
         )
     })?;
     Ok(Json(to_account_response(&account, &current_id)))
+}
+
+async fn admin_add_openai_web_account(
+    State(state): State<AppState>,
+    Json(payload): Json<AddOpenAIWebAccountRequest>,
+) -> Result<impl IntoResponse, (StatusCode, Json<ErrorResponse>)> {
+    // Validate session
+    let user_info = crate::auth::openai_web::get_user_info(&payload.access_token)
+        .await
+        .map_err(|e| {
+            (
+                StatusCode::BAD_REQUEST,
+                Json(ErrorResponse { error: e }),
+            )
+        })?;
+
+    // Create account
+    let account = crate::models::Account::new_openai_web(
+        uuid::Uuid::new_v4().to_string(),
+        user_info.email.clone(),
+        payload.access_token,
+        payload.session_token,
+    );
+
+    // Save account
+    crate::modules::account::save_account(&account).map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(ErrorResponse { error: e }),
+        )
+    })?;
+
+    // Update index
+    let mut index = crate::modules::account::load_account_index().map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(ErrorResponse { error: e }),
+        )
+    })?;
+    index.accounts.push(crate::models::AccountSummary {
+        id: account.id.clone(),
+        email: account.email.clone(),
+        name: account.name().cloned(),
+        provider: Some(account.provider.clone()),
+        disabled: account.disabled,
+        proxy_disabled: account.proxy_disabled,
+        created_at: account.created_at(),
+        last_used: account.last_used(),
+    });
+    crate::modules::account::save_account_index(&index).map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(ErrorResponse { error: e }),
+        )
+    })?;
+
+    // Reload token manager
+    if let Err(e) = state.token_manager.load_accounts().await {
+        logger::log_error(&format!(
+            "[API] Failed to reload accounts after adding OpenAI Web: {}",
+            e
+        ));
+    }
+
+    let current_id = state.account_service.get_current_id().map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(ErrorResponse { error: e }),
+        )
+    })?;
+    Ok(Json(to_account_response(&account, &current_id)))
+}
+
+async fn admin_add_openai_api_account(
+    State(state): State<AppState>,
+    Json(payload): Json<AddOpenAIAPIAccountRequest>,
+) -> Result<impl IntoResponse, (StatusCode, Json<ErrorResponse>)> {
+    // Create account with API key
+    let account = crate::models::Account::new_openai_api(
+        uuid::Uuid::new_v4().to_string(),
+        payload.email.clone(),
+        payload.api_key,
+    );
+
+    // Save account
+    crate::modules::account::save_account(&account).map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(ErrorResponse { error: e }),
+        )
+    })?;
+
+    // Update index
+    let mut index = crate::modules::account::load_account_index().map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(ErrorResponse { error: e }),
+        )
+    })?;
+    index.accounts.push(crate::models::AccountSummary {
+        id: account.id.clone(),
+        email: account.email.clone(),
+        name: account.name().cloned(),
+        provider: Some(account.provider.clone()),
+        disabled: account.disabled,
+        proxy_disabled: account.proxy_disabled,
+        created_at: account.created_at(),
+        last_used: account.last_used(),
+    });
+    crate::modules::account::save_account_index(&index).map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(ErrorResponse { error: e }),
+        )
+    })?;
+
+    // Reload token manager
+    if let Err(e) = state.token_manager.load_accounts().await {
+        logger::log_error(&format!(
+            "[API] Failed to reload accounts after adding OpenAI API: {}",
+            e
+        ));
+    }
+
+    let current_id = state.account_service.get_current_id().map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(ErrorResponse { error: e }),
+        )
+    })?;
+    Ok(Json(to_account_response(&account, &current_id)))
+}
+
+async fn admin_validate_openai_session(
+    Json(payload): Json<ValidateOpenAISessionRequest>,
+) -> Result<impl IntoResponse, (StatusCode, Json<ErrorResponse>)> {
+    let user_info = crate::auth::openai_web::get_user_info(&payload.access_token)
+        .await
+        .map_err(|e| {
+            (
+                StatusCode::BAD_REQUEST,
+                Json(ErrorResponse { error: e }),
+            )
+        })?;
+
+    Ok(Json(user_info))
 }
 
 async fn admin_delete_account(

@@ -2160,7 +2160,7 @@ async fn admin_toggle_auto_launch(Json(_payload): Json<serde_json::Value>) -> im
 }
 
 async fn admin_get_http_api_settings() -> impl IntoResponse {
-    Json(serde_json::json!({ "enabled": true, "port": 8045 }))
+    Json(serde_json::json!({ "enabled": true, "port": 8046 }))
 }
 
 // [整合清理] 冗餘導入已移除

@@ -1084,7 +1084,7 @@ async fn handle_socket(mut socket: WebSocket, state: AppState) {
 
 **前端展示**:
 ```typescript
-const ws = new WebSocket('ws://localhost:8045/api/ws/realtime');
+const ws = new WebSocket('ws://localhost:8046/api/ws/realtime');
 
 ws.onmessage = (event) => {
   const stats = JSON.parse(event.data);
@@ -1161,7 +1161,7 @@ setInterval(async () => {
 
 ```bash
 # 使用 wrk 进行压力测试
-wrk -t12 -c400 -d30s --latency http://localhost:8045/v1/chat/completions
+wrk -t12 -c400 -d30s --latency http://localhost:8046/v1/chat/completions
 
 # 结果示例：
 # Requests/sec:  50000.00  ← 优化后

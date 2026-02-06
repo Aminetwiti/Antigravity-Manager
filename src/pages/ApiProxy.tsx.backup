@@ -226,7 +226,7 @@ export default function ApiProxy() {
     };
 
     const getCurlExample = (modelId: string) => {
-        const port = status.running ? status.port : (appConfig?.proxy.port || 8045);
+        const port = status.running ? status.port : (appConfig?.proxy.port || 8046);
         const baseUrl = `http://localhost:${port}`;
         const apiKey = appConfig?.proxy.api_key || 'YOUR_API_KEY';
 
@@ -257,7 +257,7 @@ export default function ApiProxy() {
     };
 
     const getPythonExample = (modelId: string) => {
-        const port = status.running ? status.port : (appConfig?.proxy.port || 8045);
+        const port = status.running ? status.port : (appConfig?.proxy.port || 8046);
         const baseUrl = `http://localhost:${port}/v1`;
         const apiKey = appConfig?.proxy.api_key || 'YOUR_API_KEY';
 

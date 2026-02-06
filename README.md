@@ -158,7 +158,7 @@ brew install --cask antigravity-tools
 # - API_KEY: 必填。用于所有协议的 AI 请求鉴定。
 # - WEB_PASSWORD: 可选。用于管理后台登录。若不设置则默认使用 API_KEY。
 docker run -d --name antigravity-manager \
-  -p 8045:8045 \
+  -p 8046:8046 \
   -e API_KEY=sk-your-api-key \
   -e WEB_PASSWORD=your-login-password \
   -e ABV_MAX_BODY_SIZE=104857600 \
@@ -194,7 +194,7 @@ cd docker
 # 2. 启动服务
 docker compose up -d
 ```
-> **访问地址**: `http://localhost:8045` (管理后台) | `http://localhost:8045/v1` (API Base)
+> **访问地址**: `http://localhost:8046` (管理后台) | `http://localhost:8046/v1` (API Base)
 > **系统要求**:
 > - **内存**: 建议 **1GB** (最小 256MB)。
 > - **持久化**: 需挂载 `/root/.antigravity_tools` 以保存数据。
@@ -236,13 +236,13 @@ Copyright © 2024-2026 [lbjlaq](https://github.com/lbjlaq)
 2.  在终端执行：
 ```bash
 export ANTHROPIC_API_KEY="sk-antigravity"
-export ANTHROPIC_BASE_URL="http://127.0.0.1:8045"
+export ANTHROPIC_BASE_URL="http://127.0.0.1:8046"
 claude
 ```
 
 ### 如何接入 Kilo Code?
 1.  **协议选择**: 建议优先使用 **Gemini 协议**。
-2.  **Base URL**: 填写 `http://127.0.0.1:8045`。
+2.  **Base URL**: 填写 `http://127.0.0.1:8046`。
 3.  **注意**: 
     - **OpenAI 协议限制**: Kilo Code 在使用 OpenAI 模式时，其请求路径会叠加产生 `/v1/chat/completions/responses` 这种非标准路径，导致 Antigravity 返回 404。因此请务必填入 Base URL 后选择 Gemini 模式。
     - **模型映射**: Kilo Code 中的模型名称可能与 Antigravity 默认设置不一致，如遇到无法连接，请在“模型映射”页面设置自定义映射，并查看**日志文件**进行调试。
@@ -253,7 +253,7 @@ import openai
 
 client = openai.OpenAI(
     api_key="sk-antigravity",
-    base_url="http://127.0.0.1:8045/v1"
+    base_url="http://127.0.0.1:8046/v1"
 )
 
 response = client.chat.completions.create(
@@ -271,7 +271,7 @@ import openai
 
 client = openai.OpenAI(
     api_key="sk-antigravity",
-    base_url="http://127.0.0.1:8045/v1"
+    base_url="http://127.0.0.1:8046/v1"
 )
 
 # 生成图片
@@ -316,7 +316,7 @@ response = client.chat.completions.create(
 
 ```bash
 # Claude Messages API
-curl -X POST http://127.0.0.1:8045/v1/messages \
+curl -X POST http://127.0.0.1:8046/v1/messages \
   -H "Content-Type: application/json" \
   -H "x-api-key: sk-antigravity" \
   -d '{
@@ -570,7 +570,7 @@ response = client.chat.completions.create(
             - **语言增强**: 显著提升了日语 (ja) 等语言的翻译准确度，并确保了新 UI 组件在多语言环境下的显示一致性。
     *   **v4.0.8 (2026-01-30)**:
         -   **[核心功能] 记忆窗口位置与大小 (PR #1322)**: 自动恢复上次关闭时的窗口坐标与尺寸，提升使用体验。
-        -   **[核心修复] 优雅关闭 Admin Server (PR #1323)**: 修复了 Windows 环境下退出后再次启动时，端口 8045 占用导致的绑定失败问题。
+        -   **[核心修复] 优雅关闭 Admin Server (PR #1323)**: 修复了 Windows 环境下退出后再次启动时，端口 8046 占用导致的绑定失败问题。
         -   **[核心功能] 实现全链路调试日志功能 (PR #1308)**:
             - **后端集成**: 引入了 `debug_logger.rs`，支持捕获并记录 OpenAI、Claude 及 Gemini 处理器的原始请求、转换后报文及完整流式响应。
             - **动态配置**: 支持热加载日志配置，无需重启服务即可启用/禁用或修改输出目录。

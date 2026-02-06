@@ -306,7 +306,7 @@ export default function ApiProxy() {
                 const config = {
                     enabled: true,
                     mode: cfMode,
-                    port: appConfig?.proxy.port || 8045,
+                    port: appConfig?.proxy.port || 8046,
                     token: cfMode === 'auth' ? cfToken : null,
                     use_http2: cfUseHttp2,
                 };
@@ -907,7 +907,7 @@ export default function ApiProxy() {
 
 
     const getPythonExample = (modelId: string) => {
-        const port = status.running ? status.port : (appConfig?.proxy.port || 8045);
+        const port = status.running ? status.port : (appConfig?.proxy.port || 8046);
         // 推荐使用 127.0.0.1 以避免部分环境 IPv6 解析延迟问题
         const baseUrl = `http://127.0.0.1:${port}/v1`;
         const apiKey = appConfig?.proxy.api_key || 'YOUR_API_KEY';
@@ -1475,7 +1475,7 @@ print(response.text)`;
 
                             {/* CLI 同步卡片 - 支持桌面端与 Web 端 */}
                             <CliSyncCard
-                                proxyUrl={status.running ? status.base_url : `http://127.0.0.1:${appConfig.proxy.port || 8045}`}
+                                proxyUrl={status.running ? status.base_url : `http://127.0.0.1:${appConfig.proxy.port || 8046}`}
                                 apiKey={appConfig.proxy.api_key}
                             />
 
@@ -1695,9 +1695,9 @@ print(response.text)`;
                                         <div className="bg-slate-100 dark:bg-slate-800/80 rounded-lg p-3 text-[10px] font-mono text-slate-600 dark:text-slate-400">
                                             <div className="mb-1 font-bold text-gray-400 uppercase tracking-wider">{t('proxy.config.zai.mcp.local_endpoints')}</div>
                                             <div className="space-y-0.5 select-all">
-                                                {appConfig.proxy.zai?.mcp?.web_search_enabled && <div>http://127.0.0.1:{status.running ? status.port : (appConfig.proxy.port || 8045)}/mcp/web_search_prime/mcp</div>}
-                                                {appConfig.proxy.zai?.mcp?.web_reader_enabled && <div>http://127.0.0.1:{status.running ? status.port : (appConfig.proxy.port || 8045)}/mcp/web_reader/mcp</div>}
-                                                {appConfig.proxy.zai?.mcp?.vision_enabled && <div>http://127.0.0.1:{status.running ? status.port : (appConfig.proxy.port || 8045)}/mcp/zai-mcp-server/mcp</div>}
+                                                {appConfig.proxy.zai?.mcp?.web_search_enabled && <div>http://127.0.0.1:{status.running ? status.port : (appConfig.proxy.port || 8046)}/mcp/web_search_prime/mcp</div>}
+                                                {appConfig.proxy.zai?.mcp?.web_reader_enabled && <div>http://127.0.0.1:{status.running ? status.port : (appConfig.proxy.port || 8046)}/mcp/web_reader/mcp</div>}
+                                                {appConfig.proxy.zai?.mcp?.vision_enabled && <div>http://127.0.0.1:{status.running ? status.port : (appConfig.proxy.port || 8046)}/mcp/zai-mcp-server/mcp</div>}
                                             </div>
                                         </div>
                                     )}
@@ -2443,7 +2443,7 @@ print(response.text)`;
                                             <span className="text-xs font-bold text-blue-600">{t('proxy.multi_protocol.openai_label')}</span>
                                             <button onClick={(e) => {
                                                 e.stopPropagation();
-                                                const baseUrl = status.running ? status.base_url : `http://127.0.0.1:${appConfig.proxy.port || 8045}`;
+                                                const baseUrl = status.running ? status.base_url : `http://127.0.0.1:${appConfig.proxy.port || 8046}`;
                                                 copyToClipboardHandler(`${baseUrl}/v1`, 'openai');
                                             }} className="btn btn-ghost btn-xs">
                                                 {copied === 'openai' ? <CheckCircle size={14} /> : <div className="flex items-center gap-1 text-[10px] uppercase font-bold tracking-tighter"><Copy size={12} /> {t('proxy.multi_protocol.copy_base', { defaultValue: 'Base' })}</div>}
@@ -2454,7 +2454,7 @@ print(response.text)`;
                                                 <code className="text-[10px] opacity-70">/v1/chat/completions</code>
                                                 <button onClick={(e) => {
                                                     e.stopPropagation();
-                                                    const baseUrl = status.running ? status.base_url : `http://127.0.0.1:${appConfig.proxy.port || 8045}`;
+                                                    const baseUrl = status.running ? status.base_url : `http://127.0.0.1:${appConfig.proxy.port || 8046}`;
                                                     copyToClipboardHandler(`${baseUrl}/v1/chat/completions`, 'openai-chat');
                                                 }} className="opacity-0 group-hover:opacity-100 transition-opacity">
                                                     {copied === 'openai-chat' ? <CheckCircle size={10} className="text-green-500" /> : <Copy size={10} />}
@@ -2464,7 +2464,7 @@ print(response.text)`;
                                                 <code className="text-[10px] opacity-70">/v1/completions</code>
                                                 <button onClick={(e) => {
                                                     e.stopPropagation();
-                                                    const baseUrl = status.running ? status.base_url : `http://127.0.0.1:${appConfig.proxy.port || 8045}`;
+                                                    const baseUrl = status.running ? status.base_url : `http://127.0.0.1:${appConfig.proxy.port || 8046}`;
                                                     copyToClipboardHandler(`${baseUrl}/v1/completions`, 'openai-compl');
                                                 }} className="opacity-0 group-hover:opacity-100 transition-opacity">
                                                     {copied === 'openai-compl' ? <CheckCircle size={10} className="text-green-500" /> : <Copy size={10} />}
@@ -2474,7 +2474,7 @@ print(response.text)`;
                                                 <code className="text-[10px] opacity-70 font-bold text-blue-500">/v1/responses (Codex)</code>
                                                 <button onClick={(e) => {
                                                     e.stopPropagation();
-                                                    const baseUrl = status.running ? status.base_url : `http://127.0.0.1:${appConfig.proxy.port || 8045}`;
+                                                    const baseUrl = status.running ? status.base_url : `http://127.0.0.1:${appConfig.proxy.port || 8046}`;
                                                     copyToClipboardHandler(`${baseUrl}/v1/responses`, 'openai-resp');
                                                 }} className="opacity-0 group-hover:opacity-100 transition-opacity">
                                                     {copied === 'openai-resp' ? <CheckCircle size={10} className="text-green-500" /> : <Copy size={10} />}
@@ -2492,7 +2492,7 @@ print(response.text)`;
                                             <span className="text-xs font-bold text-purple-600">{t('proxy.multi_protocol.anthropic_label')}</span>
                                             <button onClick={(e) => {
                                                 e.stopPropagation();
-                                                const baseUrl = status.running ? status.base_url : `http://127.0.0.1:${appConfig.proxy.port || 8045}`;
+                                                const baseUrl = status.running ? status.base_url : `http://127.0.0.1:${appConfig.proxy.port || 8046}`;
                                                 copyToClipboardHandler(`${baseUrl}/v1/messages`, 'anthropic');
                                             }} className="btn btn-ghost btn-xs">
                                                 {copied === 'anthropic' ? <CheckCircle size={14} /> : <Copy size={14} />}
@@ -2510,7 +2510,7 @@ print(response.text)`;
                                             <span className="text-xs font-bold text-green-600">{t('proxy.multi_protocol.gemini_label')}</span>
                                             <button onClick={(e) => {
                                                 e.stopPropagation();
-                                                const baseUrl = status.running ? status.base_url : `http://127.0.0.1:${appConfig.proxy.port || 8045}`;
+                                                const baseUrl = status.running ? status.base_url : `http://127.0.0.1:${appConfig.proxy.port || 8046}`;
                                                 copyToClipboardHandler(`${baseUrl}/v1beta/models`, 'gemini');
                                             }} className="btn btn-ghost btn-xs">
                                                 {copied === 'gemini' ? <CheckCircle size={14} /> : <Copy size={14} />}

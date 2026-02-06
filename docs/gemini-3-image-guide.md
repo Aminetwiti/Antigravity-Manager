@@ -76,7 +76,7 @@
 ```python
 import requests
 
-url = "http://localhost:8045/v1/images/generations"
+url = "http://localhost:8046/v1/images/generations"
 headers = {
     "Content-Type": "application/json",
     "Authorization": "Bearer <token>"
@@ -119,7 +119,7 @@ print(response.json())
 ```python
 import requests
 
-url = "http://localhost:8045/v1/images/edits"
+url = "http://localhost:8046/v1/images/edits"
 headers = {
     "Authorization": "Bearer <token>"
 }

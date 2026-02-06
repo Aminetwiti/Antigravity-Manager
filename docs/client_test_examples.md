@@ -165,10 +165,10 @@ RUST_LOG=debug npm run tauri dev
 
 | 协议类型 | Base URL (Antigravity) | 对应的 OpenCode Provider | 备注 |
 | :--- | :--- | :--- | :--- |
-| **Anthropic (原生)** | `http://localhost:8045/v1` | `anthropic` | **推荐**。支持 Thinking、工具调用、Artifacts 预览。 |
-| **OpenAI (标准)** | `http://localhost:8045/v1` | `openai` | 支持通用 OpenAI 客户端逻辑。 |
-| **OA-Compatible** | `http://localhost:8045/v1` | `openai-compatible` | 适用于强制指定非标准模型名称的场景。 |
-| **Google Gemini** | `http://localhost:8045/v1` | `gemini` | 直接使用 Gemini 协议，支持 Google 原生 SDK 特性。 |
+| **Anthropic (原生)** | `http://localhost:8046/v1` | `anthropic` | **推荐**。支持 Thinking、工具调用、Artifacts 预览。 |
+| **OpenAI (标准)** | `http://localhost:8046/v1` | `openai` | 支持通用 OpenAI 客户端逻辑。 |
+| **OA-Compatible** | `http://localhost:8046/v1` | `openai-compatible` | 适用于强制指定非标准模型名称的场景。 |
+| **Google Gemini** | `http://localhost:8046/v1` | `gemini` | 直接使用 Gemini 协议，支持 Google 原生 SDK 特性。 |
 
 ### A. 方式 1：Anthropic 原生协议 (推荐)
 
@@ -177,7 +177,7 @@ RUST_LOG=debug npm run tauri dev
 1.  **配置**:
     ```bash
     # 设置 Base URL (注意：OpenCode 的 anthropic provider 有时需要完整路径)
-    export ANTHROPIC_BASE_URL="http://localhost:8045/v1"
+    export ANTHROPIC_BASE_URL="http://localhost:8046/v1"
     # 设置 API Key (Antigravity 的密钥)
     export ANTHROPIC_API_KEY="sk-antigravity-key"
     ```
@@ -199,7 +199,7 @@ RUST_LOG=debug npm run tauri dev
 1.  **配置**:
     ```bash
     # 设置 Base URL
-    export OPENAI_BASE_URL="http://localhost:8045/v1"
+    export OPENAI_BASE_URL="http://localhost:8046/v1"
     export OPENAI_API_KEY="sk-antigravity-key"
     ```
 
@@ -222,7 +222,7 @@ Antigravity v4.1.4 新增支持。
     ```bash
     export GEMINI_API_KEY="sk-antigravity-key"
     # 如果 OpenCode 支持 GEMINI_BASE_URL (通常需要反代工具如 cloudflared 或修改 config):
-    export GEMINI_BASE_URL="http://localhost:8045/v1"
+    export GEMINI_BASE_URL="http://localhost:8046/v1"
     ```
 
 2.  **验证点**:

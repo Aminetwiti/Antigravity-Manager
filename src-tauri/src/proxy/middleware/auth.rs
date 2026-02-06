@@ -243,7 +243,7 @@ mod tests {
             api_key: "sk-api".to_string(),
             admin_password: Some("admin123".to_string()),
             allow_lan_access: true,
-            port: 8045,
+            port: 8046,
             security_monitor: crate::proxy::config::SecurityMonitorConfig::default(),
         }));
 

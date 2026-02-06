@@ -580,7 +580,7 @@
             },
             "port": "Listen Port",
             "port_tooltip": "TCP port the local API Proxy listens on. Stop the service to change it, then restart to apply.",
-            "port_hint": "Default 8045, restart required to apply changes",
+            "port_hint": "Default 8046, restart required to apply changes",
             "auto_start": "Auto Start with App",
             "auto_start_tooltip": "Automatically starts the local API Proxy service when the app launches.",
             "allow_lan_access": "Allow LAN Access",
