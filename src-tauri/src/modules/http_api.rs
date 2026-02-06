@@ -256,12 +256,12 @@ async fn list_accounts() -> Result<impl IntoResponse, (StatusCode, Json<ErrorRes
             AccountResponse {
                 id: acc.id,
                 email: acc.email,
-                name: acc.name,
+                name: acc.name().cloned(),
                 is_current,
                 disabled: acc.disabled,
                 quota,
-                device_bound: acc.device_profile.is_some(),
-                last_used: acc.last_used,
+                device_bound: acc.device_profile().is_some(),
+                last_used: acc.last_used(),
             }
         })
         .collect();

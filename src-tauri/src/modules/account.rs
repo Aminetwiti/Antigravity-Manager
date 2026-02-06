@@ -779,7 +779,7 @@ pub fn export_accounts_by_ids(account_ids: &[String]) -> Result<crate::models::A
         .filter(|acc| account_ids.contains(&acc.id))
         .filter_map(|acc| {
             acc.token().map(|token| AccountExportItem {
-                email: acc.email,
+                email: acc.email.clone(),
                 refresh_token: token.refresh_token.clone(),
             })
         })
@@ -798,7 +798,7 @@ pub fn export_accounts() -> Result<Vec<(String, String)>, String> {
 
     for account in accounts {
         if let Some(token) = account.token() {
-            exports.push((account.email, token.refresh_token.clone()));
+            exports.push((account.email.clone(), token.refresh_token.clone()));
         }
     }
 
@@ -837,7 +837,7 @@ pub async fn fetch_quota_with_retry(account: &mut Account) -> crate::error::AppR
     if let Some(current_token) = account.token() {
         if token.access_token != current_token.access_token {
             modules::logger::log_info(&format!("Time-based Token refresh: {}", account.email));
-            account.set_token(token.clone())?;
+            account.set_token(token.clone()).map_err(AppError::Account)?;
 
             // Get display name (incidental to Token refresh)
             let name = if account.name().is_none()
@@ -883,6 +883,7 @@ pub async fn fetch_quota_with_retry(account: &mut Account) -> crate::error::AppR
                 modules::logger::log_warn(&format!("Failed to fetch display name: {}", e));
             }
         }
+    }
     }
 
     // 2. Attempt query
@@ -971,7 +972,7 @@ pub async fn fetch_quota_with_retry(account: &mut Account) -> crate::error::AppR
                     account.name().cloned()
                 };
 
-                account.set_token(new_token.clone())?;
+                account.set_token(new_token.clone()).map_err(AppError::Account)?;
                 *account.name_mut() = name.clone();
                 upsert_account(account.email.clone(), name, new_token.clone())
                     .map_err(AppError::Account)?;

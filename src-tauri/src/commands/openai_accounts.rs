@@ -1,8 +1,4 @@
-
-#[tauri::command]
-pub async fn get_token_stats_account_trend_daily(days: i64) -> Result<Vec<crate::modules::token_stats::AccountTrendPoint>, String> {
-    crate::modules::token_stats::get_account_trend_daily(days)
-}
+use crate::models::Account;
 
 // --- OpenAI Account Management Commands ---
 
@@ -15,7 +11,7 @@ pub async fn add_openai_web_account(
     access_token: String,
     session_token: String,
 ) -> Result<Account, String> {
-    modules::logger::log_info(&format!("Adding OpenAI Web account: {}", email));
+    crate::modules::logger::log_info(&format!("Adding OpenAI Web account: {}", email));
     
     // Validate session
     let user_info = crate::auth::openai_web::get_user_info(&access_token).await?;
@@ -29,15 +25,21 @@ pub async fn add_openai_web_account(
     );
     
     // Save account
-    modules::account::save_account(&account)?;
+    crate::modules::account::save_account(&account)?;
     
     // Update index
-    let mut index = modules::account::load_account_index()?;
+    let mut index = crate::modules::account::load_account_index()?;
     index.accounts.push(crate::models::AccountSummary {
         id: account.id.clone(),
         email: account.email.clone(),
+        name: account.name().cloned(),
+        provider: Some(account.provider.clone()),
+        disabled: account.disabled,
+        proxy_disabled: account.proxy_disabled,
+        created_at: account.created_at(),
+        last_used: account.last_used(),
     });
-    modules::account::save_account_index(&index)?;
+    crate::modules::account::save_account_index(&index)?;
     
     // Update tray
     crate::modules::tray::update_tray_menus(&app);
@@ -45,7 +47,7 @@ pub async fn add_openai_web_account(
     // Reload token pool
     let _ = crate::commands::proxy::reload_proxy_accounts(proxy_state).await;
     
-    modules::logger::log_info(&format!("OpenAI Web account added: {}", user_info.email));
+    crate::modules::logger::log_info(&format!("OpenAI Web account added: {}", user_info.email));
     Ok(account)
 }
 
@@ -57,7 +59,7 @@ pub async fn add_openai_api_account(
     name: String,
     api_key: String,
 ) -> Result<Account, String> {
-    modules::logger::log_info(&format!("Adding OpenAI API account: {}", name));
+    crate::modules::logger::log_info(&format!("Adding OpenAI API account: {}", name));
     
     // Create account
     let account = Account::new_openai_api(
@@ -67,15 +69,21 @@ pub async fn add_openai_api_account(
     );
     
     // Save account
-    modules::account::save_account(&account)?;
+    crate::modules::account::save_account(&account)?;
     
     // Update index
-    let mut index = modules::account::load_account_index()?;
+    let mut index = crate::modules::account::load_account_index()?;
     index.accounts.push(crate::models::AccountSummary {
         id: account.id.clone(),
         email: account.email.clone(),
+        name: account.name().cloned(),
+        provider: Some(account.provider.clone()),
+        disabled: account.disabled,
+        proxy_disabled: account.proxy_disabled,
+        created_at: account.created_at(),
+        last_used: account.last_used(),
     });
-    modules::account::save_account_index(&index)?;
+    crate::modules::account::save_account_index(&index)?;
     
     // Update tray
     crate::modules::tray::update_tray_menus(&app);
@@ -83,7 +91,7 @@ pub async fn add_openai_api_account(
     // Reload token pool
     let _ = crate::commands::proxy::reload_proxy_accounts(proxy_state).await;
     
-    modules::logger::log_info(&format!("OpenAI API account added: {}", name));
+    crate::modules::logger::log_info(&format!("OpenAI API account added: {}", name));
     Ok(account)
 }
 
@@ -93,7 +101,7 @@ pub async fn validate_openai_session(access_token: String) -> Result<bool, Strin
     match crate::auth::openai_web::validate_session(&access_token).await {
         Ok(_) => Ok(true),
         Err(e) => {
-            modules::logger::log_warn(&format!("Session validation failed: {}", e));
+            crate::modules::logger::log_warn(&format!("Session validation failed: {}", e));
             Ok(false)
         }
     }

@@ -534,7 +534,7 @@ pub async fn sync_account_from_db(
 
     // 3. 对比：如果 Refresh Token 相同，说明账号没变，无需导入
     if let Some(acc) = curr_account {
-        if acc.token.refresh_token == db_refresh_token {
+        if acc.token().map_or(false, |t| t.refresh_token == db_refresh_token) {
             // 账号未变，由于已经是周期性任务，我们可以选择性刷新一下配额，或者直接返回
             // 这里为了节省 API 流量，直接返回
             return Ok(None);

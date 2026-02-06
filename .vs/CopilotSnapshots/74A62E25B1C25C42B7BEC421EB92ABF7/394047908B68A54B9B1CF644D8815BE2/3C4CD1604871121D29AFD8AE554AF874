@@ -1,4 +1,4 @@
-use crate::models::AppConfig;
+﻿use crate::models::AppConfig;
 use crate::modules::{account, config, logger, migration, proxy_db, security_db, token_stats};
 use crate::proxy::TokenManager;
 use axum::{
@@ -1056,7 +1056,7 @@ async fn admin_switch_account(
 
 async fn admin_refresh_all_quotas() -> Result<impl IntoResponse, (StatusCode, Json<ErrorResponse>)>
 {
-    logger::log_info("[API] Starting refresh of all account quotas");
+    logger::log_info "[API] Starting refresh of all account quotas";
     let stats = account::refresh_all_quotas_logic().await.map_err(|e| {
         (
             StatusCode::INTERNAL_SERVER_ERROR,

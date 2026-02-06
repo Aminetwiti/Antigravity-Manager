@@ -20,17 +20,17 @@ pub enum ProviderCredentials {
     Google {
         token: TokenData,
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        device_profile: Option\u003cDeviceProfile\u003e,
+        device_profile: Option<DeviceProfile>,
     },
     OpenAIWeb {
         access_token: String,
         session_token: String,
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        puid: Option\u003cString\u003e,
+        puid: Option<String>,
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        cf_clearance: Option\u003cString\u003e,
+        cf_clearance: Option<String>,
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        expires_at: Option\u003ci64\u003e,
+        expires_at: Option<i64>,
     },
     OpenAIAPI {
         api_key: String,
@@ -52,7 +52,7 @@ impl ProviderCredentials {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AccountMetadata {
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub name: Option\u003cString\u003e,
+    pub name: Option<String>,
     pub created_at: i64,
     pub last_used: i64,
     #[serde(default = "default_true")]
@@ -86,50 +86,50 @@ pub struct Account {
     
     /// 设备指纹历史（生成/采集时记录），不含基线 (Google only, for backward compatibility)
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub device_history: Vec\u003cDeviceProfileVersion\u003e,
+    pub device_history: Vec<DeviceProfileVersion>,
     
-    pub quota: Option\u003cQuotaData\u003e,
+    pub quota: Option<QuotaData>,
     
     /// Disabled accounts are ignored by the proxy token pool (e.g. revoked refresh_token -> invalid_grant).
     #[serde(default)]
     pub disabled: bool,
     /// Optional human-readable reason for disabling.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub disabled_reason: Option\u003cString\u003e,
+    pub disabled_reason: Option<String>,
     /// Unix timestamp when the account was disabled.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub disabled_at: Option\u003ci64\u003e,
+    pub disabled_at: Option<i64>,
     
     /// User manually disabled proxy feature (does not affect app usage).
     #[serde(default)]
     pub proxy_disabled: bool,
     /// Optional human-readable reason for proxy disabling.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub proxy_disabled_reason: Option\u003cString\u003e,
+    pub proxy_disabled_reason: Option<String>,
     /// Unix timestamp when the proxy was disabled.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub proxy_disabled_at: Option\u003ci64\u003e,
+    pub proxy_disabled_at: Option<i64>,
     
     /// 受配额保护禁用的模型列表
     #[serde(default, skip_serializing_if = "HashSet::is_empty")]
-    pub protected_models: HashSet\u003cString\u003e,
+    pub protected_models: HashSet<String>,
     
     /// 403 验证阻止状态 (VALIDATION_REQUIRED)
     #[serde(default)]
     pub validation_blocked: bool,
     /// 验证阻止截止时间戳
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub validation_blocked_until: Option\u003ci64\u003e,
+    pub validation_blocked_until: Option<i64>,
     /// 验证阻止原因
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub validation_blocked_reason: Option\u003cString\u003e,
+    pub validation_blocked_reason: Option<String>,
     
     /// 绑定的代理 ID (None = 使用全局代理池)
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub proxy_id: Option\u003cString\u003e,
+    pub proxy_id: Option<String>,
     /// 代理绑定时间
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub proxy_bound_at: Option\u003ci64\u003e,
+    pub proxy_bound_at: Option<i64>,
 }
 
 impl Account {
@@ -143,7 +143,7 @@ impl Account {
         id: String,
         email: String,
         token: TokenData,
-        device_profile: Option\u003cDeviceProfile\u003e,
+        device_profile: Option<DeviceProfile>,
     ) -> Self {
         Self {
             id,
@@ -349,8 +349,8 @@ impl Account {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AccountIndex {
     pub version: String,
-    pub accounts: Vec\u003cAccountSummary\u003e,
-    pub current_account_id: Option\u003cString\u003e,
+    pub accounts: Vec<AccountSummary>,
+    pub current_account_id: Option<String>,
 }
 
 /// 账号摘要信息
@@ -358,9 +358,9 @@ pub struct AccountIndex {
 pub struct AccountSummary {
     pub id: String,
     pub email: String,
-    pub name: Option\u003cString\u003e,
+    pub name: Option<String>,
     #[serde(default)]
-    pub provider: Option\u003cProvider\u003e,
+    pub provider: Option<Provider>,
     #[serde(default)]
     pub disabled: bool,
     #[serde(default)]
@@ -415,5 +415,5 @@ pub struct AccountExportItem {
 /// 导出账号响应
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AccountExportResponse {
-    pub accounts: Vec\u003cAccountExportItem\u003e,
+    pub accounts: Vec<AccountExportItem>,
 }
