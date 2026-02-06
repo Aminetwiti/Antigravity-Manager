@@ -10,16 +10,17 @@ const CONFIG_FILE: &str = "gui_config.json";
 pub fn load_app_config() -> Result<AppConfig, String> {
     let data_dir = get_data_dir()?;
     let config_path = data_dir.join(CONFIG_FILE);
-    
+
+    let mut modified = false;
     let mut config = if !config_path.exists() {
         AppConfig::new()
     } else {
         let content = fs::read_to_string(&config_path)
             .map_err(|e| format!("failed_to_read_config_file: {}", e))?;
-        
+
         let mut v: serde_json::Value = serde_json::from_str(&content)
             .map_err(|e| format!("failed_to_parse_config_file: {}", e))?;
-        
+
         // Migration logic
         if let Some(proxy) = v.get_mut("proxy") {
             let mut custom_mapping = proxy.get("custom_mapping")
@@ -65,7 +66,7 @@ pub fn load_app_config() -> Result<AppConfig, String> {
     let mut env_modified = false;
 
     // Environment variable overrides (highest priority)
-    
+
     // API Key
     if let Ok(key) = std::env::var("ABV_API_KEY").or_else(|_| std::env::var("API_KEY")) {
         if !key.trim().is_empty() && config.proxy.api_key != key {
@@ -121,10 +122,10 @@ pub fn load_app_config() -> Result<AppConfig, String> {
 pub fn save_app_config(config: &AppConfig) -> Result<(), String> {
     let data_dir = get_data_dir()?;
     let config_path = data_dir.join(CONFIG_FILE);
-    
+
     let content = serde_json::to_string_pretty(config)
         .map_err(|e| format!("failed_to_serialize_config: {}", e))?;
-    
+
     fs::write(&config_path, content)
         .map_err(|e| format!("failed_to_save_config: {}", e))
 }

@@ -825,10 +825,14 @@ async fn admin_list_accounts(
                 is_forbidden: q.is_forbidden,
             });
 
+            let name = acc.name().cloned();
+            let device_bound = acc.device_profile().is_some();
+            let last_used = acc.last_used();
+
             AccountResponse {
                 id: acc.id,
                 email: acc.email,
-                name: acc.name().cloned(),
+                name,
                 is_current,
                 disabled: acc.disabled,
                 disabled_reason: acc.disabled_reason,
@@ -841,8 +845,8 @@ async fn admin_list_accounts(
                 validation_blocked_until: acc.validation_blocked_until,
                 validation_blocked_reason: acc.validation_blocked_reason,
                 quota,
-                device_bound: acc.device_profile().is_some(),
-                last_used: acc.last_used(),
+                device_bound,
+                last_used,
             }
         })
         .collect();
@@ -902,10 +906,14 @@ async fn admin_get_current_account(
                 is_forbidden: q.is_forbidden,
             });
 
+            let name = acc.name().cloned();
+            let device_bound = acc.device_profile().is_some();
+            let last_used = acc.last_used();
+
             AccountResponse {
                 id: acc.id,
                 email: acc.email,
-                name: acc.name().cloned(),
+                name,
                 is_current: true,
                 disabled: acc.disabled,
                 disabled_reason: acc.disabled_reason,
@@ -918,8 +926,8 @@ async fn admin_get_current_account(
                 validation_blocked_until: acc.validation_blocked_until,
                 validation_blocked_reason: acc.validation_blocked_reason,
                 quota,
-                device_bound: acc.device_profile().is_some(),
-                last_used: acc.last_used(),
+                device_bound,
+                last_used,
             }
         })
     } else {

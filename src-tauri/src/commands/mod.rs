@@ -19,7 +19,7 @@ pub mod user_token;
 pub mod openai_accounts;
 
 // Re-export OpenAI account commands
-pub use openai_accounts::{add_openai_web_account, add_openai_api_account, validate_openai_session};
+pub use openai_accounts::{add_openai_web_account, add_openai_api_account, validate_openai_session, start_openai_oauth_flow};
 
 /// 列出所有账号
 #[tauri::command]

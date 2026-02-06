@@ -863,7 +863,7 @@ pub async fn fetch_quota_with_retry(account: &mut Account) -> crate::error::AppR
             account.email
         ));
         // Use updated token
-        if let Some(current_token) = account.token() {
+        if let Some(current_token) = account.token().cloned() {
             match oauth::get_user_info(&current_token.access_token, Some(&account.id)).await {
                 Ok(user_info) => {
                     let display_name = user_info.get_display_name();
@@ -895,16 +895,18 @@ pub async fn fetch_quota_with_retry(account: &mut Account) -> crate::error::AppR
 
     // Capture potentially updated project_id and save
     if let Ok((ref _q, ref project_id)) = result {
+        let email_clone = account.email.clone();
+        let name_clone = account.name().cloned();
         if let Some(token_mut) = account.token_mut() {
             if project_id.is_some() && *project_id != token_mut.project_id {
                 modules::logger::log_info(&format!(
                     "Detected project_id update ({}), saving...",
-                    account.email
+                    &email_clone
                 ));
                 token_mut.project_id = project_id.clone();
                 if let Err(e) = upsert_account(
-                    account.email.clone(),
-                    account.name().cloned(),
+                    email_clone,
+                    name_clone,
                     token_mut.clone(),
                 ) {
                     modules::logger::log_warn(&format!("Failed to sync project_id: {}", e));
@@ -983,16 +985,18 @@ pub async fn fetch_quota_with_retry(account: &mut Account) -> crate::error::AppR
 
                 // Also handle project_id saving during retry
                 if let Ok((ref _q, ref project_id)) = retry_result {
+                    let email_clone = account.email.clone();
+                    let name_clone = account.name().cloned();
                     if let Some(token_mut) = account.token_mut() {
                         if project_id.is_some() && *project_id != token_mut.project_id {
                             modules::logger::log_info(&format!(
                                 "Detected update of project_id after retry ({}), saving...",
-                                account.email
+                                &email_clone
                             ));
                             token_mut.project_id = project_id.clone();
                             let _ = upsert_account(
-                                account.email.clone(),
-                                account.name().cloned(),
+                                email_clone,
+                                name_clone,
                                 token_mut.clone(),
                             );
                         }

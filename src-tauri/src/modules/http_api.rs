@@ -252,16 +252,20 @@ async fn list_accounts() -> Result<impl IntoResponse, (StatusCode, Json<ErrorRes
                 updated_at: Some(q.last_updated),
                 subscription_tier: q.subscription_tier,
             });
-            
+
+            let name = acc.name().cloned();
+            let device_bound = acc.device_profile().is_some();
+            let last_used = acc.last_used();
+
             AccountResponse {
                 id: acc.id,
                 email: acc.email,
-                name: acc.name().cloned(),
+                name,
                 is_current,
                 disabled: acc.disabled,
                 quota,
-                device_bound: acc.device_profile().is_some(),
-                last_used: acc.last_used(),
+                device_bound,
+                last_used,
             }
         })
         .collect();
@@ -292,15 +296,19 @@ async fn get_current_account() -> Result<impl IntoResponse, (StatusCode, Json<Er
             subscription_tier: q.subscription_tier,
         });
 
+        let name = acc.name().cloned();
+        let device_bound = acc.device_profile().is_some();
+        let last_used = acc.last_used();
+
         AccountResponse {
             id: acc.id,
             email: acc.email,
-            name: acc.name,
+            name,
             is_current: true,
             disabled: acc.disabled,
             quota,
-            device_bound: acc.device_profile.is_some(),
-            last_used: acc.last_used,
+            device_bound,
+            last_used,
         }
     });
 
@@ -337,7 +345,7 @@ async fn switch_account(
     // Execute switch asynchronously (non-blocking response)
     tokio::spawn(async move {
         logger::log_info(&format!("[HTTP API] Starting account switch: {}", account_id));
-        
+
         match account::switch_account(&account_id, &state_clone.integration).await {
             Ok(()) => {
                 logger::log_info(&format!("[HTTP API] Account switch successful: {}", account_id));

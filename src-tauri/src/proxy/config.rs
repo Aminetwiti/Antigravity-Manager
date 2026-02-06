@@ -40,7 +40,7 @@ pub fn update_thinking_budget_config(config: ThinkingBudgetConfig) {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum ProxyAuthMode {
     Off,
